@@ -2,32 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 0 0% 10%;
+
+        --card: 0 0% 100%;
+        --card-foreground: 0 0% 10%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 0 0% 10%;
+
+        --primary: 142 72% 43%;
+        --primary-foreground: 0 0% 100%;
+
+        --secondary: 0 0% 96%;
+        --secondary-foreground: 0 0% 10%;
+
+        --muted: 0 0% 96%;
+        --muted-foreground: 0 0% 45%;
+
+        --accent: 142 72% 43%;
+        --accent-foreground: 0 0% 100%;
+
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 100%;
+
+        --border: 0 0% 90%;
+        --input: 0 0% 90%;
+        --ring: 142 72% 43%;
+
+        --radius: 0.5rem;
+    }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+.spotify-gradient {
+    background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+.card-hover {
+    transition:
+        transform 0.2s ease-in-out,
+        box-shadow 0.2s ease-in-out;
+}
+
+.card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
