@@ -45,11 +45,6 @@ interface GroupsStore {
   isLoading: boolean;
   error: string | null;
   fetchGroups: (userId: string) => Promise<void>;
-  createGroup: (
-    name: string,
-    description: string,
-    userId: string,
-  ) => Promise<Group | null>;
   clearGroups: () => void;
 }
 
@@ -65,7 +60,7 @@ export const useGroupsStore = create<GroupsStore>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const response = await fetch(`/api/get-groups?user_id=${userId}`);
+      const response = await fetch(`/api/groups?user_id=${userId}`);
       const data = await response.json();
 
       if (!response.ok) throw new Error(data.error || "Failed to fetch groups");
@@ -82,49 +77,6 @@ export const useGroupsStore = create<GroupsStore>((set, get) => ({
       set({ groups, isLoading: false });
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
-    }
-  },
-
-  createGroup: async (name: string, description: string, userId: string) => {
-    if (!userId || !name.trim()) return null;
-
-    try {
-      const supabase = createClient();
-
-      // Create the group
-      const { data: newGroup, error: groupError } = await supabase
-        .from("groups")
-        .insert([{ name, description, created_by: userId }])
-        .select()
-        .single();
-
-      if (groupError) throw groupError;
-
-      // Add the creator as a member
-      if (newGroup) {
-        const { error: memberError } = await supabase
-          .from("group_members")
-          .insert([
-            {
-              group_id: newGroup.id,
-              member_id: userId,
-              role: "admin", // Optional: if you have roles
-            },
-          ]);
-
-        if (memberError) throw memberError;
-
-        // Add the new group to the store
-        const groups = [...get().groups, newGroup];
-        set({ groups });
-
-        return newGroup;
-      }
-
-      return null;
-    } catch (error: any) {
-      console.error("Error creating group:", error);
-      return null;
     }
   },
 

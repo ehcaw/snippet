@@ -21,13 +21,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useGroupsStore } from "@/utils/stores";
+import { useGroupsStore, useUserStore } from "@/utils/stores";
 import { uploadMusic } from "@/lib/actions";
+import useSWR from "swr";
 
 interface UploadDialogProps {
   children: React.ReactNode;
   onSuccess?: () => void;
 }
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export function UploadDialog({ children, onSuccess }: UploadDialogProps) {
   const [open, setOpen] = useState(false);
@@ -36,7 +39,21 @@ export function UploadDialog({ children, onSuccess }: UploadDialogProps) {
   const [artist, setArtist] = useState("");
   const [group, setGroup] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-  const { groups } = useGroupsStore();
+  const { userId } = useUserStore();
+
+  const {
+    data: groupsData,
+    error: groupsError,
+    isLoading: groupsLoading,
+  } = useSWR(userId ? `/api/groups?user_id=${userId}` : null, fetcher);
+
+  // Process groups data
+  const groups =
+    groupsData?.data?.map((membership: any) => ({
+      id: membership.groups.id,
+      name: membership.groups.name,
+      members: "...", // This would need to come from another query
+    })) || [];
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -194,7 +211,7 @@ export function UploadDialog({ children, onSuccess }: UploadDialogProps) {
                 </SelectTrigger>
                 <SelectContent>
                   {groups.length > 0 ? (
-                    groups.map((g) => (
+                    groups.map((g: any) => (
                       <SelectItem key={g.id} value={g.id}>
                         {g.name}
                       </SelectItem>

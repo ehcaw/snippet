@@ -135,12 +135,9 @@ export default function GroupPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">{group?.name}</h1>
         <UploadDialog>
-          <Button
-            variant="ghost"
-            className="w-full justify-start text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 mt-2"
-          >
-            <Upload className="mr-3 h-5 w-5" />
-            Upload to Group
+          <Button size="sm" className="h-9 px-3">
+            <Upload className="h-4 w-4 mr-1" />
+            Upload
           </Button>
         </UploadDialog>
       </div>

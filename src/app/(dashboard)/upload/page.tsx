@@ -24,6 +24,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { uploadMusic } from "@/lib/actions";
+import { useUserStore } from "@/utils/stores";
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function UploadPage() {
   const router = useRouter();
@@ -32,14 +36,21 @@ export default function UploadPage() {
   const [artist, setArtist] = useState("");
   const [group, setGroup] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const { userId } = useUserStore();
 
-  // Mock data for groups
-  const groups = [
-    { id: "1", name: "Rock Enthusiasts" },
-    { id: "2", name: "Jazz Club" },
-    { id: "3", name: "EDM Lovers" },
-    { id: "4", name: "Classical Appreciation" },
-  ];
+  const {
+    data: groupsData,
+    error: groupsError,
+    isLoading: groupsLoading,
+  } = useSWR(userId ? `/api/groups?user_id=${userId}` : null, fetcher);
+
+  // Process groups data
+  const groups =
+    groupsData?.data?.map((membership: any) => ({
+      id: membership.groups.id,
+      name: membership.groups.name,
+      members: "...", // This would need to come from another query
+    })) || [];
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
