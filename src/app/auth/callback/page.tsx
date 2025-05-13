@@ -14,7 +14,7 @@ export default function AuthCallbackPage() {
         if (userError) {
           throw new Error("Unable to sign in");
         }
-        router.push("/groups");
+        router.push("/dashboard");
       } catch (error: any) {
         router.push("/error");
       }

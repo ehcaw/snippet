@@ -14,7 +14,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MusicPlayer } from "@/components/music-player";
 
 export default function LibraryPage() {
   // Mock data for uploaded tracks
@@ -265,8 +264,6 @@ export default function LibraryPage() {
           </Card>
         </TabsContent>
       </Tabs>
-
-      <MusicPlayer />
     </div>
   );
 }

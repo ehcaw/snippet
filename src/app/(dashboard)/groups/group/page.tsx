@@ -5,26 +5,23 @@ import { useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, Users, Music, FileMusic } from "lucide-react";
+import { Download, Users, Music, FileMusic, Upload } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { Database } from "../../../../../database.types";
+import { UploadDialog } from "@/components/dashboard/upload-file-dialog";
 
-type Upload = {
-  id: string;
-  name: string;
-  file_path: string;
-  created_at: string;
-  uploaded_by: string;
-  user: {
-    name: string;
+type GroupDetails = Database["public"]["Tables"]["groups"]["Row"];
+type MemberRow = Database["public"]["Tables"]["group_members"]["Row"] & {
+  profiles?: {
+    username: string;
     avatar_url?: string;
   };
 };
-
-type Member = {
-  id: string;
-  name: string;
-  avatar_url?: string;
-  role: string;
+type UploadRow = Database["public"]["Tables"]["user_uploads"]["Row"] & {
+  profiles?: {
+    username: string;
+    avatar_url?: string;
+  };
 };
 
 export default function GroupPage() {
@@ -32,9 +29,9 @@ export default function GroupPage() {
   const groupId = searchParams.get("id");
   const supabase = createClient();
 
-  const [groupName, setGroupName] = useState<string>("");
-  const [uploads, setUploads] = useState<Upload[]>([]);
-  const [members, setMembers] = useState<Member[]>([]);
+  const [group, setGroup] = useState<GroupDetails | null>(null);
+  const [uploads, setUploads] = useState<UploadRow[]>([]);
+  const [members, setMembers] = useState<MemberRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,24 +44,23 @@ export default function GroupPage() {
         // Fetch group details
         const { data: groupData, error: groupError } = await supabase
           .from("groups")
-          .select("name")
+          .select("*")
           .eq("id", groupId)
           .single();
 
         if (groupError) throw groupError;
-        setGroupName(groupData.name);
+        setGroup(groupData);
 
         // Fetch uploads
         const { data: uploadsData, error: uploadsError } = await supabase
-          .from("uploads")
+          .from("user_uploads")
           .select(
             `
-            id,
-            name,
-            file_path,
-            created_at,
-            uploaded_by,
-            user:uploaded_by (name, avatar_url)
+            *,
+            profiles:user_id (
+              username,
+              avatar_url
+            )
           `,
           )
           .eq("group_id", groupId)
@@ -78,24 +74,17 @@ export default function GroupPage() {
           .from("group_members")
           .select(
             `
-            id,
-            user:user_id (id, name, avatar_url),
-            role
+            *,
+            profiles:member_id (
+              username,
+              avatar_url
+            )
           `,
           )
           .eq("group_id", groupId);
 
         if (membersError) throw membersError;
-
-        // Transform the data structure to match our Member type
-        const formattedMembers = membersData.map((item: any) => ({
-          id: item.user.id,
-          name: item.user.name,
-          avatar_url: item.user.avatar_url,
-          role: item.role,
-        }));
-
-        setMembers(formattedMembers || []);
+        setMembers(membersData || []);
       } catch (error) {
         console.error("Error fetching group data:", error);
       } finally {
@@ -106,8 +95,13 @@ export default function GroupPage() {
     fetchGroupData();
   }, [groupId, supabase]);
 
-  const handleDownload = async (filePath: string, fileName: string) => {
+  const handleDownload = async (uploadLink: string, fileName: string) => {
     try {
+      // Extract the file path from the upload link if needed
+      const filePath = uploadLink.includes("/")
+        ? uploadLink.split("/").pop() || uploadLink
+        : uploadLink;
+
       const { data, error } = await supabase.storage
         .from("uploads")
         .download(filePath);
@@ -118,7 +112,7 @@ export default function GroupPage() {
       const url = URL.createObjectURL(data);
       const a = document.createElement("a");
       a.href = url;
-      a.download = fileName;
+      a.download = fileName || "music-file";
       document.body.appendChild(a);
       a.click();
       URL.revokeObjectURL(url);
@@ -139,7 +133,16 @@ export default function GroupPage() {
   return (
     <div className="container py-6 space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">{groupName}</h1>
+        <h1 className="text-3xl font-bold">{group?.name}</h1>
+        <UploadDialog>
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 mt-2"
+          >
+            <Upload className="mr-3 h-5 w-5" />
+            Upload to Group
+          </Button>
+        </UploadDialog>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
@@ -160,15 +163,19 @@ export default function GroupPage() {
                 <div className="space-y-4">
                   {uploads.map((upload) => (
                     <div
-                      key={upload.id}
+                      key={`${upload.user_id}-${upload.created_at}`}
                       className="flex items-center justify-between p-3 border rounded-lg"
                     >
                       <div className="flex items-center gap-3">
                         <Music className="h-10 w-10 text-primary p-2 bg-primary/10 rounded-full" />
                         <div>
-                          <p className="font-medium">{upload.name}</p>
+                          <p className="font-medium">
+                            {upload.upload_link.split("/").pop() ||
+                              "Music File"}
+                          </p>
                           <p className="text-sm text-muted-foreground">
-                            Uploaded by {upload.user?.name || "Unknown user"} ·
+                            Uploaded by{" "}
+                            {upload.profiles?.username || "Unknown user"} ·
                             {new Date(upload.created_at).toLocaleDateString()}
                           </p>
                         </div>
@@ -177,7 +184,10 @@ export default function GroupPage() {
                         variant="outline"
                         size="sm"
                         onClick={() =>
-                          handleDownload(upload.file_path, upload.name)
+                          handleDownload(
+                            upload.upload_link,
+                            upload.upload_link.split("/").pop() || "music-file",
+                          )
                         }
                         className="flex items-center gap-1"
                       >
@@ -203,17 +213,24 @@ export default function GroupPage() {
             <CardContent>
               <div className="space-y-3">
                 {members.map((member) => (
-                  <div key={member.id} className="flex items-center gap-3 p-2">
+                  <div
+                    key={member.member_id}
+                    className="flex items-center gap-3 p-2"
+                  >
                     <Avatar>
-                      <AvatarImage src={member.avatar_url || ""} />
+                      <AvatarImage src={member.profiles?.avatar_url || ""} />
                       <AvatarFallback>
-                        {member.name.substring(0, 2).toUpperCase()}
+                        {(member.profiles?.username || "User")
+                          .substring(0, 2)
+                          .toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium">{member.name}</p>
-                      <p className="text-xs text-muted-foreground capitalize">
-                        {member.role}
+                      <p className="font-medium">
+                        {member.profiles?.username || "Unknown user"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Joined {new Date(member.joined_at).toLocaleDateString()}
                       </p>
                     </div>
                   </div>

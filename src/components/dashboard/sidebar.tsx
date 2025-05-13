@@ -24,24 +24,14 @@ export function Sidebar() {
       title: "Home",
     },
     {
-      href: "/dashboard/library",
+      href: "/library",
       icon: Library,
       title: "My Library",
     },
     {
-      href: "/dashboard/upload",
+      href: "/upload",
       icon: Upload,
       title: "Upload",
-    },
-    {
-      href: "/dashboard/groups",
-      icon: Users,
-      title: "My Groups",
-    },
-    {
-      href: "/dashboard/discover",
-      icon: Compass,
-      title: "Discover",
     },
   ];
 
@@ -67,40 +57,6 @@ export function Sidebar() {
               </Link>
             </Button>
           ))}
-        </div>
-        <div className="space-y-4 pt-4">
-          <div className="px-3 py-2">
-            <h2 className="mb-2 text-lg font-semibold tracking-tight">
-              Your Playlists
-            </h2>
-            <div className="space-y-1">
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-gray-700 hover:bg-gray-100"
-              >
-                <Headphones className="mr-3 h-5 w-5" />
-                Workout Mix
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-gray-700 hover:bg-gray-100"
-              >
-                <Headphones className="mr-3 h-5 w-5" />
-                Chill Vibes
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-gray-700 hover:bg-gray-100"
-              >
-                <Headphones className="mr-3 h-5 w-5" />
-                Road Trip
-              </Button>
-            </div>
-          </div>
-          <Button className="w-full justify-start bg-spotify-green text-white hover:bg-spotify-green/90">
-            <PlusCircle className="mr-2 h-5 w-5" />
-            Create New Playlist
-          </Button>
         </div>
       </div>
     </div>

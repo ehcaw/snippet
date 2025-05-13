@@ -1,21 +1,19 @@
 "use client";
 
-import type React from "react";
-
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Upload, X, FileMusic } from "lucide-react";
+import { Upload, X, FileMusic, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -23,23 +21,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useGroupsStore } from "@/utils/stores";
 import { uploadMusic } from "@/lib/actions";
 
-export default function UploadPage() {
-  const router = useRouter();
+interface UploadDialogProps {
+  children: React.ReactNode;
+  onSuccess?: () => void;
+}
+
+export function UploadDialog({ children, onSuccess }: UploadDialogProps) {
+  const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState("");
   const [artist, setArtist] = useState("");
   const [group, setGroup] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-
-  // Mock data for groups
-  const groups = [
-    { id: "1", name: "Rock Enthusiasts" },
-    { id: "2", name: "Jazz Club" },
-    { id: "3", name: "EDM Lovers" },
-    { id: "4", name: "Classical Appreciation" },
-  ];
+  const { groups } = useGroupsStore();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -70,13 +67,17 @@ export default function UploadPage() {
       // Call the server action to upload the file
       await uploadMusic(file, title, artist, group);
 
-      // Reset form and redirect
+      // Reset form and close dialog
       setFile(null);
       setTitle("");
       setArtist("");
       setGroup("");
-      router.push("/dashboard/library");
-      router.refresh();
+      setOpen(false);
+
+      // Call onSuccess callback if provided
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       console.error("Upload failed:", error);
       alert("Failed to upload file. Please try again.");
@@ -86,18 +87,20 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 pb-20">
-      <Card className="border-none shadow-lg">
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-2xl">
         <form onSubmit={handleSubmit}>
-          <CardHeader className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-t-lg">
-            <CardTitle>Upload a Track</CardTitle>
-            <CardDescription className="text-white/80">
+          <DialogHeader className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6 -m-4 mb-0 rounded-t-lg">
+            <DialogTitle className="text-xl">Upload a Track</DialogTitle>
+            <DialogDescription className="text-white/80">
               Upload MP3 or MP4 files to share with your groups.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6 p-6">
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 p-6 pt-8">
             <div className="space-y-2">
-              <Label htmlFor="file" className="text-base font-medium">
+              <Label htmlFor="file-upload" className="text-base font-medium">
                 Music File
               </Label>
               {file ? (
@@ -123,13 +126,11 @@ export default function UploadPage() {
                   </Button>
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-300 p-10 transition-colors hover:border-spotify-green">
+                <div className="flex flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-300 p-6 transition-colors hover:border-spotify-green">
                   <div className="flex flex-col items-center justify-center space-y-3 text-center">
-                    <div className="rounded-full bg-green-100 p-3">
-                      <Upload className="h-10 w-10 text-spotify-green" />
-                    </div>
+                    <Upload className="h-8 w-8 text-spotify-green" />
                     <div className="flex flex-col space-y-1">
-                      <p className="text-lg font-medium">
+                      <p className="font-medium">
                         Drag and drop your file here or click to browse
                       </p>
                       <p className="text-sm text-muted-foreground">
@@ -137,7 +138,7 @@ export default function UploadPage() {
                       </p>
                     </div>
                     <Input
-                      id="file"
+                      id="file-upload"
                       type="file"
                       accept=".mp3,.mp4,audio/mpeg,audio/mp4,video/mp4"
                       className="hidden"
@@ -145,7 +146,9 @@ export default function UploadPage() {
                     />
                     <Button
                       type="button"
-                      onClick={() => document.getElementById("file")?.click()}
+                      onClick={() =>
+                        document.getElementById("file-upload")?.click()
+                      }
                       className="bg-spotify-green text-white hover:bg-spotify-green/90"
                     >
                       Select File
@@ -155,30 +158,30 @@ export default function UploadPage() {
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="title" className="text-base font-medium">
-                Track Title
-              </Label>
-              <Input
-                id="title"
-                placeholder="Enter track title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="border-gray-300 focus-visible:ring-spotify-green"
-              />
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="title" className="text-base font-medium">
+                  Track Title
+                </Label>
+                <Input
+                  id="title"
+                  placeholder="Enter track title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="artist" className="text-base font-medium">
-                Artist
-              </Label>
-              <Input
-                id="artist"
-                placeholder="Enter artist name"
-                value={artist}
-                onChange={(e) => setArtist(e.target.value)}
-                className="border-gray-300 focus-visible:ring-spotify-green"
-              />
+              <div className="space-y-2">
+                <Label htmlFor="artist" className="text-base font-medium">
+                  Artist
+                </Label>
+                <Input
+                  id="artist"
+                  placeholder="Enter artist name"
+                  value={artist}
+                  onChange={(e) => setArtist(e.target.value)}
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -186,30 +189,52 @@ export default function UploadPage() {
                 Share with Group
               </Label>
               <Select value={group} onValueChange={setGroup}>
-                <SelectTrigger className="border-gray-300 focus:ring-spotify-green">
+                <SelectTrigger>
                   <SelectValue placeholder="Select a group" />
                 </SelectTrigger>
                 <SelectContent>
-                  {groups.map((g) => (
-                    <SelectItem key={g.id} value={g.id}>
-                      {g.name}
+                  {groups.length > 0 ? (
+                    groups.map((g) => (
+                      <SelectItem key={g.id} value={g.id}>
+                        {g.name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="no-groups" disabled>
+                      No groups available
                     </SelectItem>
-                  ))}
+                  )}
                 </SelectContent>
               </Select>
             </div>
-          </CardContent>
-          <CardFooter className="bg-gray-50 p-6 rounded-b-lg">
+          </div>
+
+          <DialogFooter className="bg-gray-50 p-6 -m-4 mt-0 rounded-b-lg">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={isUploading}
+            >
+              Cancel
+            </Button>
             <Button
               type="submit"
-              disabled={isUploading}
-              className="w-full bg-spotify-green text-white hover:bg-spotify-green/90 text-lg py-6"
+              disabled={isUploading || !file || !title || !artist || !group}
+              className="bg-spotify-green text-white hover:bg-spotify-green/90"
             >
-              {isUploading ? "Uploading..." : "Upload Track"}
+              {isUploading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                "Upload Track"
+              )}
             </Button>
-          </CardFooter>
+          </DialogFooter>
         </form>
-      </Card>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
