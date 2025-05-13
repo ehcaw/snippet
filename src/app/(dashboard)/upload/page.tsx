@@ -26,6 +26,8 @@ import {
 import { uploadMusic } from "@/lib/actions";
 import { useUserStore } from "@/utils/stores";
 import useSWR from "swr";
+import { uploadFileToSupabase } from "@/lib/upload-helper";
+import { toast } from "@/hooks/use-toast";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -79,18 +81,27 @@ export default function UploadPage() {
 
     try {
       // Call the server action to upload the file
-      await uploadMusic(file, title, artist, group);
+      const fileMetadata = await uploadFileToSupabase(file);
+      const result = await uploadMusic(fileMetadata, title, artist, group);
 
       // Reset form and redirect
       setFile(null);
       setTitle("");
       setArtist("");
       setGroup("");
-      router.push("/dashboard/library");
-      router.refresh();
+      toast({
+        title: "Upload Successful",
+        description: `${title} by ${artist} has been uploaded.`,
+        variant: "default",
+      });
     } catch (error) {
       console.error("Upload failed:", error);
-      alert("Failed to upload file. Please try again.");
+      toast({
+        title: "Upload Failed",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive",
+      });
     } finally {
       setIsUploading(false);
     }
@@ -201,7 +212,7 @@ export default function UploadPage() {
                   <SelectValue placeholder="Select a group" />
                 </SelectTrigger>
                 <SelectContent>
-                  {groups.map((g) => (
+                  {groups.map((g: any) => (
                     <SelectItem key={g.id} value={g.id}>
                       {g.name}
                     </SelectItem>

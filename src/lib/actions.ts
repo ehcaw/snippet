@@ -4,8 +4,16 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
 import { randomUUID } from "crypto";
 
+interface FileMetadata {
+  filePath: string;
+  fileUrl: string;
+  fileType: string;
+  fileSize: number;
+  fileName: string;
+}
+
 export async function uploadMusic(
-  file: File,
+  fileMetadata: FileMetadata,
   title: string,
   artist: string,
   groupId: string,
@@ -21,30 +29,6 @@ export async function uploadMusic(
       throw new Error("Not authenticated");
     }
 
-    // Generate a unique filename to avoid collisions
-    const fileExtension = file.name.split(".").pop();
-    const uniqueFilename = `${randomUUID()}.${fileExtension}`;
-
-    // Upload file to Supabase storage
-    const { data: fileData, error: uploadError } = await supabase.storage
-      .from("mp4")
-      .upload(`uploads/${uniqueFilename}`, file, {
-        cacheControl: "3600",
-        contentType: file.type,
-      });
-
-    if (uploadError) {
-      throw uploadError;
-    }
-
-    // Get the public URL for the uploaded file
-    const { data: publicUrlData } = supabase.storage
-      .from("mp4")
-      .getPublicUrl(`uploads/${uniqueFilename}`);
-
-    const publicUrl = publicUrlData.publicUrl;
-
-    // Now store metadata in a database table for querying
     const { data: trackData, error: trackError } = await supabase
       .from("tracks")
       .insert([
@@ -53,10 +37,11 @@ export async function uploadMusic(
           artist,
           group_id: groupId,
           uploaded_by: user.id,
-          file_path: `uploads/${uniqueFilename}`,
-          file_url: publicUrl,
-          file_type: file.type,
-          file_size: file.size,
+          file_path: fileMetadata.filePath,
+          file_url: fileMetadata.fileUrl,
+          file_type: fileMetadata.fileType,
+          file_size: fileMetadata.fileSize,
+          original_filename: fileMetadata.fileName,
           upload_date: new Date().toISOString(),
         },
       ])
@@ -64,8 +49,6 @@ export async function uploadMusic(
       .single();
 
     if (trackError) {
-      // If metadata insertion fails, try to delete the uploaded file
-      await supabase.storage.from("mp4").remove([`uploads/${uniqueFilename}`]);
       throw trackError;
     }
 
@@ -76,7 +59,6 @@ export async function uploadMusic(
 
     return {
       success: true,
-      url: publicUrl,
       track: trackData,
     };
   } catch (error) {
@@ -131,4 +113,13 @@ export async function searchTracks(query: string) {
     .or(`title.ilike.%${query}%,artist.ilike.%${query}%`)
     .order("upload_date", { ascending: false });
   return tracks;
+}
+
+export async function downloadMedia(url: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.storage.from("mp4").download(url);
+  if (error) {
+    return null;
+  }
+  return data;
 }

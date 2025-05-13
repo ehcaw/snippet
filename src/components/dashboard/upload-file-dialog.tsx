@@ -24,6 +24,8 @@ import {
 import { useGroupsStore, useUserStore } from "@/utils/stores";
 import { uploadMusic } from "@/lib/actions";
 import useSWR from "swr";
+import { uploadFileToSupabase } from "@/lib/upload-helper";
+import { cx } from "class-variance-authority";
 
 interface UploadDialogProps {
   children: React.ReactNode;
@@ -82,7 +84,10 @@ export function UploadDialog({ children, onSuccess }: UploadDialogProps) {
 
     try {
       // Call the server action to upload the file
-      await uploadMusic(file, title, artist, group);
+      const fileMetadata = await uploadFileToSupabase(file);
+      console.log(fileMetadata);
+      const result = await uploadMusic(fileMetadata, title, artist, group);
+      console.log(result);
 
       // Reset form and close dialog
       setFile(null);

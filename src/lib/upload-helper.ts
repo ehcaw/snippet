@@ -1,34 +1,45 @@
 "use client";
 
-export async function uploadToBlob(file: File) {
+import { createClient } from "@/utils/supabase/client";
+import { randomUUID } from "crypto";
+
+// This function handles the file upload from the client side
+export async function uploadFileToSupabase(file: File) {
+  if (!file) {
+    throw new Error("No file provided");
+  }
+
+  const supabase = createClient();
+
   try {
-    // Get a presigned URL from the server
-    const response = await fetch("/api/upload-url");
-    const { url, fields } = await response.json();
+    // Generate a unique filename to avoid collisions
+    const fileExtension = file.name.split(".").pop();
+    const uniqueFilename = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExtension}`;
 
-    // Create a FormData instance
-    const formData = new FormData();
+    // Upload file to Supabase storage
+    const { data, error } = await supabase.storage
+      .from("mp4")
+      .upload(`uploads/${uniqueFilename}`, file, {
+        cacheControl: "3600",
+        contentType: file.type,
+      });
 
-    // Add the fields to the FormData
-    Object.entries(fields).forEach(([key, value]) => {
-      formData.append(key, value as string);
-    });
-
-    // Add the file to the FormData
-    formData.append("file", file);
-
-    // Upload the file directly to Vercel Blob
-    const uploadResponse = await fetch(url, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!uploadResponse.ok) {
-      throw new Error("Upload failed");
+    if (error) {
+      throw error;
     }
 
-    // Return the URL of the uploaded file
-    return `${url}/${fields.key}`;
+    // Get the public URL for the uploaded file
+    const { data: publicUrlData } = supabase.storage
+      .from("mp4")
+      .getPublicUrl(`uploads/${uniqueFilename}`);
+
+    return {
+      filePath: `uploads/${uniqueFilename}`,
+      fileUrl: publicUrlData.publicUrl,
+      fileType: file.type,
+      fileSize: file.size,
+      fileName: file.name,
+    };
   } catch (error) {
     console.error("Error uploading file:", error);
     throw error;
