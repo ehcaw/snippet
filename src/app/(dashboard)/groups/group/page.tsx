@@ -22,8 +22,9 @@ export type MemberRow = Database["public"]["Tables"]["group_members"]["Row"] & {
     avatar_url?: string;
   };
 };
-type UploadRow = Database["public"]["Tables"]["tracks"]["Row"] & {
+export type UploadRow = Database["public"]["Tables"]["tracks"]["Row"] & {
   user_email: string;
+  group_name?: string;
 };
 
 export default function GroupPage() {

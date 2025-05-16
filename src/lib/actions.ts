@@ -135,16 +135,43 @@ export async function getTracksFromUser(userId: string) {
 
 export async function getTracksFromAllGroups(userId: string) {
   const supabase = await createClient();
+
+  // Get all groups the user is a member of
   const { data: groups } = await supabase
     .from("group_members")
     .select("group_id")
     .eq("member_id", userId);
+
+  let groupIds = [];
+  if (groups) {
+    groupIds = groups.map((group) => group.group_id);
+  }
+
+  if (groupIds.length === 0) {
+    return [];
+  }
+
+  // Get all tracks from those groups, including group info via join
   const { data: tracks } = await supabase
     .from("tracks")
-    .select()
-    .in("group_id", groups || [])
+    .select(
+      `
+      *,
+      groups:group_id (
+        name
+      )
+    `,
+    )
+    .in("group_id", groupIds)
     .order("upload_date", { ascending: false });
-  return tracks;
+
+  // Transform the result to include the group name directly in each track object
+  return (
+    tracks?.map((track) => ({
+      ...track,
+      group_name: track.groups?.name || "Unknown Group",
+    })) || []
+  );
 }
 
 export async function searchTracks(query: string) {

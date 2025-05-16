@@ -6,10 +6,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import useSWR from "swr";
 import { createClient } from "@/utils/supabase/client";
-import { useEffect, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useUserStore } from "@/utils/stores";
 import { useRouter } from "next/navigation";
 import { CreateGroupDialog } from "./create-group-dialog";
+import { getTracksFromAllGroups } from "@/lib/actions";
+import { UploadRow } from "@/app/(dashboard)/groups/group/page";
 // Fetch function for SWR
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -17,6 +19,7 @@ export default function DashboardPage() {
   const { userId, setUserId, userEmail, setUserEmail } = useUserStore();
   const router = useRouter();
   const [isAuthChecking, setIsAuthChecking] = useState(true);
+  const [recentTracks, setRecentTracks] = useState<UploadRow[]>([]);
   const supabase = createClient();
 
   // Authentication check
@@ -39,6 +42,20 @@ export default function DashboardPage() {
     checkAuth();
   }, [supabase.auth, setUserId, router, setUserEmail]);
 
+  useEffect(() => {
+    async function getRecentlyUploaded() {
+      if (userId) {
+        const tracks = await getTracksFromAllGroups(userId);
+        console.log(tracks);
+        setRecentTracks(tracks || []);
+      }
+    }
+
+    if (userId) {
+      getRecentlyUploaded();
+    }
+  }, [userId]);
+
   // Fetch groups data
   const {
     data: groupsData,
@@ -53,8 +70,6 @@ export default function DashboardPage() {
       name: membership.groups.name,
       members: "...", // This would need to come from another query
     })) || [];
-
-  const recentTracks: any[] = [];
 
   // Show loading state while checking authentication
   if (isAuthChecking) {
@@ -113,16 +128,6 @@ export default function DashboardPage() {
                 </p>
               </Card>
             )}
-
-            <Link href="/groups">
-              <Card className="flex flex-col gap-2 rounded-lg border p-6 hover:shadow-md transition-shadow h-full items-center justify-center text-center bg-muted/50">
-                <Users className="h-12 w-12 text-primary" />
-                <h3 className="text-xl font-bold">Explore More Groups</h3>
-                <p className="text-muted-foreground">
-                  Discover or create new music sharing circles
-                </p>
-              </Card>
-            </Link>
           </div>
         )}
       </section>
@@ -163,8 +168,7 @@ export default function DashboardPage() {
                 </Button>
               </div>
               <div className="mt-2 text-sm text-muted-foreground flex justify-between items-center">
-                <span>Shared in {track.group}</span>
-                <span>{track.uploadDate}</span>
+                <span>Shared in {track.group_name}</span>
               </div>
             </Card>
           ))}
