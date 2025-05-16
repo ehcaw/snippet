@@ -9,19 +9,21 @@ import { Download, Users, Music, FileMusic, Upload } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Database } from "../../../../../database.types";
 import { UploadDialog } from "@/components/dashboard/upload-file-dialog";
+import { getGroupMembers } from "@/lib/actions";
 
 type GroupDetails = Database["public"]["Tables"]["groups"]["Row"];
-type MemberRow = Database["public"]["Tables"]["group_members"]["Row"] & {
+export type MemberRow = Database["public"]["Tables"]["group_members"]["Row"] & {
+  // User details from auth.users
+  email?: string | null;
+  displayName?: string | null;
+  // Keeping the profiles property for backward compatibility
   profiles?: {
     username: string;
     avatar_url?: string;
   };
 };
-type UploadRow = Database["public"]["Tables"]["user_uploads"]["Row"] & {
-  profiles?: {
-    username: string;
-    avatar_url?: string;
-  };
+type UploadRow = Database["public"]["Tables"]["tracks"]["Row"] & {
+  user_email: string;
 };
 
 export default function GroupPage() {
@@ -51,40 +53,30 @@ export default function GroupPage() {
         if (groupError) throw groupError;
         setGroup(groupData);
 
-        // Fetch uploads
-        const { data: uploadsData, error: uploadsError } = await supabase
-          .from("user_uploads")
-          .select(
-            `
-            *,
-            profiles:user_id (
-              username,
-              avatar_url
-            )
-          `,
-          )
-          .eq("group_id", groupId)
-          .order("created_at", { ascending: false });
+        const { data: uploadsData, error: uploadsError } = await supabase.rpc(
+          "get_tracks_with_user_emails",
+          { p_group_id: groupId },
+        );
 
         if (uploadsError) throw uploadsError;
         setUploads(uploadsData || []);
 
         // Fetch members
-        const { data: membersData, error: membersError } = await supabase
-          .from("group_members")
-          .select(
-            `
-            *,
-            profiles:member_id (
-              username,
-              avatar_url
-            )
-          `,
-          )
-          .eq("group_id", groupId);
+        // const { data: membersData, error: membersError } = await supabase
+        //   .from("group_members")
+        //   .select(
+        //     `
+        //     *,
+        //     profiles:member_id (
+        //       username,
+        //       avatar_url
+        //     )
+        //   `,
+        //   )
+        //   .eq("group_id", groupId);
 
-        if (membersError) throw membersError;
-        setMembers(membersData || []);
+        // if (membersError) throw membersError;
+        // setMembers(membersData || []);
       } catch (error) {
         console.error("Error fetching group data:", error);
       } finally {
@@ -92,7 +84,17 @@ export default function GroupPage() {
       }
     }
 
+    async function loadMembers() {
+      try {
+        const groupMembers = await getGroupMembers(groupId || "");
+        setMembers(groupMembers);
+      } catch (error: any) {
+        console.error("Failed to load members: ", error);
+      }
+    }
+
     fetchGroupData();
+    loadMembers();
   }, [groupId, supabase]);
 
   const handleDownload = async (uploadLink: string, fileName: string) => {
@@ -160,20 +162,20 @@ export default function GroupPage() {
                 <div className="space-y-4">
                   {uploads.map((upload) => (
                     <div
-                      key={`${upload.user_id}-${upload.created_at}`}
+                      key={`${upload.user_email}-${upload.upload_date}`}
                       className="flex items-center justify-between p-3 border rounded-lg"
                     >
                       <div className="flex items-center gap-3">
                         <Music className="h-10 w-10 text-primary p-2 bg-primary/10 rounded-full" />
                         <div>
                           <p className="font-medium">
-                            {upload.upload_link.split("/").pop() ||
-                              "Music File"}
+                            {upload.title || "Music File"} - {upload.artist}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            Uploaded by{" "}
-                            {upload.profiles?.username || "Unknown user"} ·
-                            {new Date(upload.created_at).toLocaleDateString()}
+                            Uploaded by {upload.user_email || "Unknown user"} ·
+                            {new Date(
+                              upload.upload_date || "",
+                            ).toLocaleDateString()}
                           </p>
                         </div>
                       </div>
@@ -182,8 +184,8 @@ export default function GroupPage() {
                         size="sm"
                         onClick={() =>
                           handleDownload(
-                            upload.upload_link,
-                            upload.upload_link.split("/").pop() || "music-file",
+                            upload.file_url,
+                            upload.file_url.split("/").pop() || "music-file",
                           )
                         }
                         className="flex items-center gap-1"

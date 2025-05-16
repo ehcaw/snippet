@@ -1,8 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { createClient as cc } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/server";
-import { randomUUID } from "crypto";
+import { MemberRow } from "@/app/(dashboard)/groups/group/page";
 
 interface FileMetadata {
   filePath: string;
@@ -10,6 +11,48 @@ interface FileMetadata {
   fileType: string;
   fileSize: number;
   fileName: string;
+}
+
+export async function uploadFileToSupabase(file: File) {
+  if (!file) {
+    throw new Error("No file provided");
+  }
+
+  const supabase = await createClient();
+
+  try {
+    // Generate a unique filename to avoid collisions
+    const fileExtension = file.name.split(".").pop();
+    const uniqueFilename = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExtension}`;
+
+    // Upload file to Supabase storageq
+    const { data, error } = await supabase.storage
+      .from("mp4")
+      .upload(`uploads/${uniqueFilename}`, file, {
+        cacheControl: "3600",
+        contentType: file.type,
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    // Get the public URL for the uploaded file
+    const { data: publicUrlData } = supabase.storage
+      .from("mp4")
+      .getPublicUrl(`uploads/${uniqueFilename}`);
+
+    return {
+      filePath: `uploads/${uniqueFilename}`,
+      fileUrl: publicUrlData.publicUrl,
+      fileType: file.type,
+      fileSize: file.size,
+      fileName: file.name,
+    };
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    throw error;
+  }
 }
 
 export async function uploadMusic(
@@ -41,7 +84,6 @@ export async function uploadMusic(
           file_url: fileMetadata.fileUrl,
           file_type: fileMetadata.fileType,
           file_size: fileMetadata.fileSize,
-          original_filename: fileMetadata.fileName,
           upload_date: new Date().toISOString(),
         },
       ])
@@ -122,4 +164,74 @@ export async function downloadMedia(url: string) {
     return null;
   }
   return data;
+}
+
+export async function getGroupMembers(groupId: string): Promise<MemberRow[]> {
+  try {
+    // First, get the regular client to query group members
+    const supabase = await createClient();
+
+    // Get all members of the group
+    const { data: groupMembers, error: membersError } = await supabase
+      .from("group_members")
+      .select(
+        `
+        member_id,
+        group_id,
+        joined_at
+      `,
+      )
+      .eq("group_id", groupId);
+
+    if (membersError) {
+      console.error("Error fetching group members:", membersError);
+      throw membersError;
+    }
+
+    if (!groupMembers || groupMembers.length === 0) {
+      return [];
+    }
+
+    // Get the unique member IDs
+    const memberIds = groupMembers.map((member) => member.member_id);
+
+    // Use service role key to get detailed user information
+    const adminSupabase = cc(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    );
+
+    // Get user information from auth.users
+    const { data: users, error: usersError } = await adminSupabase
+      .from("users_view")
+      .select("id, email")
+      .in("id", memberIds);
+
+    if (usersError) {
+      console.error("Error fetching user details:", usersError);
+      throw usersError;
+    }
+
+    // Combine member data with user details to match MemberRow type
+    return groupMembers.map((member) => {
+      const user = users?.find((u) => u.id === member.member_id);
+
+      // Return object that matches MemberRow type
+      return {
+        member_id: member.member_id,
+        group_id: member.group_id,
+        joined_at: member.joined_at,
+        profiles: {
+          username: user?.email?.split("@")[0] || "Unknown User",
+        },
+      };
+    });
+  } catch (error) {
+    console.error("Error getting group members:", error);
+    throw new Error(
+      typeof error === "object" && error !== null && "message" in error
+        ? String(error.message)
+        : "Failed to get group members",
+    );
+  }
 }

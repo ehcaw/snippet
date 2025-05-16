@@ -20,7 +20,6 @@ export async function GET(req: NextRequest) {
     if (error) {
       throw error;
     }
-    console.log(data);
     return NextResponse.json({ data: data }, { status: 200 });
   } catch (error: any) {
     console.log(error.message);

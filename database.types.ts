@@ -33,25 +33,107 @@ export type Database = {
             referencedRelation: "groups"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "group_members_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "users_view"
+            referencedColumns: ["id"]
+          },
         ]
       }
       groups: {
         Row: {
           created_at: string
+          created_by: string | null
+          description: string | null
           id: string
           name: string
         }
         Insert: {
           created_at?: string
+          created_by?: string | null
+          description?: string | null
           id?: string
           name: string
         }
         Update: {
           created_at?: string
+          created_by?: string | null
+          description?: string | null
           id?: string
           name?: string
         }
         Relationships: []
+      }
+      tracks: {
+        Row: {
+          album: string | null
+          artist: string
+          duration: number | null
+          file_path: string
+          file_size: number
+          file_type: string
+          file_url: string
+          genre: string | null
+          group_id: string
+          id: string
+          plays: number | null
+          title: string
+          upload_date: string | null
+          uploaded_by: string
+          year: number | null
+        }
+        Insert: {
+          album?: string | null
+          artist: string
+          duration?: number | null
+          file_path: string
+          file_size: number
+          file_type: string
+          file_url: string
+          genre?: string | null
+          group_id: string
+          id?: string
+          plays?: number | null
+          title: string
+          upload_date?: string | null
+          uploaded_by: string
+          year?: number | null
+        }
+        Update: {
+          album?: string | null
+          artist?: string
+          duration?: number | null
+          file_path?: string
+          file_size?: number
+          file_type?: string
+          file_url?: string
+          genre?: string | null
+          group_id?: string
+          id?: string
+          plays?: number | null
+          title?: string
+          upload_date?: string | null
+          uploaded_by?: string
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tracks_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tracks_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "users_view"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_uploads: {
         Row: {
@@ -80,14 +162,38 @@ export type Database = {
             referencedRelation: "groups"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_uploads_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users_view"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      users_view: {
+        Row: {
+          email: string | null
+          id: string | null
+        }
+        Insert: {
+          email?: string | null
+          id?: string | null
+        }
+        Update: {
+          email?: string | null
+          id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      get_tracks_with_user_emails: {
+        Args: { p_group_id: string }
+        Returns: Json[]
+      }
     }
     Enums: {
       [_ in never]: never

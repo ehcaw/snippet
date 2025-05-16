@@ -24,7 +24,6 @@ import {
 import { useGroupsStore, useUserStore } from "@/utils/stores";
 import { uploadMusic } from "@/lib/actions";
 import useSWR from "swr";
-import { uploadFileToSupabase } from "@/lib/upload-helper";
 import { cx } from "class-variance-authority";
 
 interface UploadDialogProps {
@@ -73,6 +72,22 @@ export function UploadDialog({ children, onSuccess }: UploadDialogProps) {
     }
   };
 
+  async function uploadFile(file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch("/api/upload-file", {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "failed to upload file");
+    }
+    return await response.json();
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file || !title || !artist || !group) {
@@ -84,7 +99,7 @@ export function UploadDialog({ children, onSuccess }: UploadDialogProps) {
 
     try {
       // Call the server action to upload the file
-      const fileMetadata = await uploadFileToSupabase(file);
+      const fileMetadata = await uploadFile(file);
       console.log(fileMetadata);
       const result = await uploadMusic(fileMetadata, title, artist, group);
       console.log(result);

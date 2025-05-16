@@ -26,8 +26,8 @@ import {
 import { uploadMusic } from "@/lib/actions";
 import { useUserStore } from "@/utils/stores";
 import useSWR from "swr";
-import { uploadFileToSupabase } from "@/lib/upload-helper";
 import { toast } from "@/hooks/use-toast";
+import { uploadFileToSupabase } from "@/lib/actions";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -70,6 +70,22 @@ export default function UploadPage() {
     }
   };
 
+  async function uploadFile(file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch("/api/upload-file", {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "failed to upload file");
+    }
+    return await response.json();
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file || !title || !artist || !group) {
@@ -81,8 +97,10 @@ export default function UploadPage() {
 
     try {
       // Call the server action to upload the file
-      const fileMetadata = await uploadFileToSupabase(file);
+      const fileMetadata = await uploadFile(file);
+      console.log("file metadata result ", fileMetadata);
       const result = await uploadMusic(fileMetadata, title, artist, group);
+      console.log("music upload result ", result);
 
       // Reset form and redirect
       setFile(null);

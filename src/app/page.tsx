@@ -20,9 +20,6 @@ export default function Home() {
                   Login
                 </Button>
               </Link>
-              <Link href="/register">
-                <Button size="sm">Sign Up</Button>
-              </Link>
             </nav>
           </div>
         </div>
@@ -46,11 +43,6 @@ export default function Home() {
                   <Link href="/register">
                     <Button size="lg" className="w-full">
                       Get Started
-                    </Button>
-                  </Link>
-                  <Link href="/about">
-                    <Button size="lg" variant="outline" className="w-full">
-                      Learn More
                     </Button>
                   </Link>
                 </div>
