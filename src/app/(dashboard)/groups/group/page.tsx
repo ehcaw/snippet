@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Database } from "../../../../../database.types";
 import { UploadDialog } from "@/components/dashboard/upload-file-dialog";
 import { getGroupMembers } from "@/lib/actions";
+import { toast, useToast } from "@/hooks/use-toast";
 
 type GroupDetails = Database["public"]["Tables"]["groups"]["Row"];
 export type MemberRow = Database["public"]["Tables"]["group_members"]["Row"] & {
@@ -27,7 +28,7 @@ export type UploadRow = Database["public"]["Tables"]["tracks"]["Row"] & {
   group_name?: string;
 };
 
-export default function GroupPage() {
+function GroupComp() {
   const searchParams = useSearchParams();
   const groupId = searchParams.get("id");
   const supabase = createClient();
@@ -116,6 +117,13 @@ export default function GroupPage() {
     const { data, error } = await supabase.storage
       .from("mp4")
       .download(`uploads/${fileName}`);
+    if (!data) {
+      toast({
+        title: "Error downloading file",
+        description: "Please try again",
+      });
+      return;
+    }
     const blobUrl = URL.createObjectURL(data);
 
     // 4) Create a temporary <a> tag and click it
@@ -244,5 +252,13 @@ export default function GroupPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function GroupPage() {
+  return (
+    <Suspense fallback={<div>Loading... </div>}>
+      <GroupComp />
+    </Suspense>
   );
 }

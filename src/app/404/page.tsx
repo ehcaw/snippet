@@ -1,12 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
 import { Home, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
 
-export default function NotFoundPage() {
+function NotFoundComp() {
   const searchParams = useSearchParams();
   const message = searchParams.get("message");
   return (
@@ -61,5 +61,13 @@ export default function NotFoundPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function NotFoundPage() {
+  return (
+    <Suspense fallback={<div> Loading...</div>}>
+      <NotFoundComp />
+    </Suspense>
   );
 }
