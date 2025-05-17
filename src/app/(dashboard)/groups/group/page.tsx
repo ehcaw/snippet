@@ -59,25 +59,10 @@ export default function GroupPage() {
           { p_group_id: groupId },
         );
 
+        console.log(uploadsData);
+
         if (uploadsError) throw uploadsError;
         setUploads(uploadsData || []);
-
-        // Fetch members
-        // const { data: membersData, error: membersError } = await supabase
-        //   .from("group_members")
-        //   .select(
-        //     `
-        //     *,
-        //     profiles:member_id (
-        //       username,
-        //       avatar_url
-        //     )
-        //   `,
-        //   )
-        //   .eq("group_id", groupId);
-
-        // if (membersError) throw membersError;
-        // setMembers(membersData || []);
       } catch (error) {
         console.error("Error fetching group data:", error);
       } finally {
@@ -124,6 +109,29 @@ export default function GroupPage() {
       console.error("Error downloading file:", error);
     }
   };
+
+  async function downloadViaFetch(url: string): Promise<void> {
+    const fileName = url.split("/").pop();
+    console.log("Bruh");
+    const { data, error } = await supabase.storage
+      .from("mp4")
+      .download(`uploads/${fileName}`);
+    const blobUrl = URL.createObjectURL(data);
+
+    // 4) Create a temporary <a> tag and click it
+    const a = document.createElement("a");
+    a.style.display = "none";
+    a.href = blobUrl;
+    a.download = fileName || "";
+    document.body.appendChild(a);
+    a.click();
+
+    // 5) Clean up
+    setTimeout(() => {
+      URL.revokeObjectURL(blobUrl);
+      document.body.removeChild(a);
+    }, 100);
+  }
 
   if (loading) {
     return (
@@ -183,13 +191,8 @@ export default function GroupPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() =>
-                          handleDownload(
-                            upload.file_url,
-                            upload.file_url.split("/").pop() || "music-file",
-                          )
-                        }
                         className="flex items-center gap-1"
+                        onClick={() => downloadViaFetch(upload.file_url)}
                       >
                         <Download className="h-4 w-4" />
                         Download
