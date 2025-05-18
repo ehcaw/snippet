@@ -100,9 +100,7 @@ export function UploadDialog({ children, onSuccess }: UploadDialogProps) {
     try {
       // Call the server action to upload the file
       const fileMetadata = await uploadFile(file);
-      console.log(fileMetadata);
       const result = await uploadMusic(fileMetadata, title, artist, group);
-      console.log(result);
 
       // Reset form and close dialog
       setFile(null);
@@ -126,7 +124,7 @@ export function UploadDialog({ children, onSuccess }: UploadDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-2xl bg-zinc-900 border-zinc-800 text-zinc-100">
         <form onSubmit={handleSubmit}>
           <DialogHeader className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6 -m-4 mb-0 rounded-t-lg">
             <DialogTitle className="text-xl">Upload a Track</DialogTitle>
@@ -141,12 +139,12 @@ export function UploadDialog({ children, onSuccess }: UploadDialogProps) {
                 Music File
               </Label>
               {file ? (
-                <div className="flex items-center justify-between rounded-md border-2 border-spotify-green p-4 bg-green-50">
+                <div className="flex items-center justify-between rounded-md border-2 border-spotify-green p-4 bg-zinc-800">
                   <div className="flex items-center space-x-3">
                     <FileMusic className="h-8 w-8 text-spotify-green" />
                     <div>
-                      <span className="font-medium">{file.name}</span>
-                      <p className="text-sm text-muted-foreground">
+                      <span className="font-medium text-zinc-100">{file.name}</span>
+                      <p className="text-sm text-zinc-400">
                         {(file.size / (1024 * 1024)).toFixed(2)} MB
                       </p>
                     </div>
@@ -156,21 +154,21 @@ export function UploadDialog({ children, onSuccess }: UploadDialogProps) {
                     variant="ghost"
                     size="icon"
                     onClick={() => setFile(null)}
-                    className="text-gray-500 hover:text-red-500"
+                    className="text-zinc-400 hover:text-red-500"
                   >
                     <X className="h-5 w-5" />
                     <span className="sr-only">Remove file</span>
                   </Button>
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-300 p-6 transition-colors hover:border-spotify-green">
+                <div className="flex flex-col items-center justify-center rounded-md border-2 border-dashed border-zinc-700 p-6 transition-colors hover:border-spotify-green">
                   <div className="flex flex-col items-center justify-center space-y-3 text-center">
                     <Upload className="h-8 w-8 text-spotify-green" />
                     <div className="flex flex-col space-y-1">
-                      <p className="font-medium">
+                      <p className="font-medium text-zinc-100">
                         Drag and drop your file here or click to browse
                       </p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-zinc-400">
                         MP3 or MP4 files up to 50MB
                       </p>
                     </div>
@@ -205,6 +203,7 @@ export function UploadDialog({ children, onSuccess }: UploadDialogProps) {
                   placeholder="Enter track title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  className="bg-zinc-800 border-zinc-700 focus-visible:ring-spotify-green placeholder:text-zinc-500 text-zinc-100"
                 />
               </div>
 
@@ -217,6 +216,7 @@ export function UploadDialog({ children, onSuccess }: UploadDialogProps) {
                   placeholder="Enter artist name"
                   value={artist}
                   onChange={(e) => setArtist(e.target.value)}
+                  className="bg-zinc-800 border-zinc-700 focus-visible:ring-spotify-green placeholder:text-zinc-500 text-zinc-100"
                 />
               </div>
             </div>
@@ -226,18 +226,18 @@ export function UploadDialog({ children, onSuccess }: UploadDialogProps) {
                 Share with Group
               </Label>
               <Select value={group} onValueChange={setGroup}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-zinc-800 border-zinc-700 focus:ring-spotify-green data-[placeholder]:text-zinc-500 text-zinc-100">
                   <SelectValue placeholder="Select a group" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-zinc-800 text-zinc-100 border-zinc-700">
                   {groups.length > 0 ? (
                     groups.map((g: any) => (
-                      <SelectItem key={g.id} value={g.id}>
+                      <SelectItem key={g.id} value={g.id} className="focus:bg-spotify-green/20 focus:text-white hover:bg-zinc-700">
                         {g.name}
                       </SelectItem>
                     ))
                   ) : (
-                    <SelectItem value="no-groups" disabled>
+                    <SelectItem value="no-groups" disabled className="text-zinc-500">
                       No groups available
                     </SelectItem>
                   )}
@@ -246,12 +246,13 @@ export function UploadDialog({ children, onSuccess }: UploadDialogProps) {
             </div>
           </div>
 
-          <DialogFooter className="bg-gray-50 p-6 -m-4 mt-0 rounded-b-lg">
+          <DialogFooter className="bg-zinc-950 p-6 -m-4 mt-0 rounded-b-lg border-t border-zinc-800">
             <Button
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
               disabled={isUploading}
+              className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100"
             >
               Cancel
             </Button>

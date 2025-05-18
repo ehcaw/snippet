@@ -98,9 +98,7 @@ export default function UploadPage() {
     try {
       // Call the server action to upload the file
       const fileMetadata = await uploadFile(file);
-      console.log("file metadata result ", fileMetadata);
       const result = await uploadMusic(fileMetadata, title, artist, group);
-      console.log("music upload result ", result);
 
       // Reset form and redirect
       setFile(null);
@@ -126,8 +124,8 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 pb-20">
-      <Card className="border-none shadow-lg">
+    <div className="mx-auto max-w-2xl space-y-6 pb-20 text-zinc-100">
+      <Card className="bg-zinc-800 border border-zinc-700 shadow-lg">
         <form onSubmit={handleSubmit}>
           <CardHeader className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-t-lg">
             <CardTitle>Upload a Track</CardTitle>
@@ -141,12 +139,12 @@ export default function UploadPage() {
                 Music File
               </Label>
               {file ? (
-                <div className="flex items-center justify-between rounded-md border-2 border-spotify-green p-4 bg-green-50">
+                <div className="flex items-center justify-between rounded-md border-2 border-spotify-green p-4 bg-zinc-700">
                   <div className="flex items-center space-x-3">
                     <FileMusic className="h-8 w-8 text-spotify-green" />
                     <div>
-                      <span className="font-medium">{file.name}</span>
-                      <p className="text-sm text-muted-foreground">
+                      <span className="font-medium text-zinc-100">{file.name}</span>
+                      <p className="text-sm text-zinc-400">
                         {(file.size / (1024 * 1024)).toFixed(2)} MB
                       </p>
                     </div>
@@ -156,23 +154,23 @@ export default function UploadPage() {
                     variant="ghost"
                     size="icon"
                     onClick={() => setFile(null)}
-                    className="text-gray-500 hover:text-red-500"
+                    className="text-zinc-400 hover:text-red-500"
                   >
                     <X className="h-5 w-5" />
                     <span className="sr-only">Remove file</span>
                   </Button>
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-300 p-10 transition-colors hover:border-spotify-green">
+                <div className="flex flex-col items-center justify-center rounded-md border-2 border-dashed border-zinc-600 p-10 transition-colors hover:border-spotify-green">
                   <div className="flex flex-col items-center justify-center space-y-3 text-center">
-                    <div className="rounded-full bg-green-100 p-3">
+                    <div className="rounded-full bg-spotify-green/10 p-3">
                       <Upload className="h-10 w-10 text-spotify-green" />
                     </div>
                     <div className="flex flex-col space-y-1">
                       <p className="text-lg font-medium">
                         Drag and drop your file here or click to browse
                       </p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-zinc-400">
                         MP3 or MP4 files up to 50MB
                       </p>
                     </div>
@@ -204,7 +202,7 @@ export default function UploadPage() {
                 placeholder="Enter track title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="border-gray-300 focus-visible:ring-spotify-green"
+                className="bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-400 focus-visible:ring-spotify-green"
               />
             </div>
 
@@ -217,7 +215,7 @@ export default function UploadPage() {
                 placeholder="Enter artist name"
                 value={artist}
                 onChange={(e) => setArtist(e.target.value)}
-                className="border-gray-300 focus-visible:ring-spotify-green"
+                className="bg-zinc-700 border-zinc-600 text-zinc-100 placeholder:text-zinc-400 focus-visible:ring-spotify-green"
               />
             </div>
 
@@ -226,12 +224,12 @@ export default function UploadPage() {
                 Share with Group
               </Label>
               <Select value={group} onValueChange={setGroup}>
-                <SelectTrigger className="border-gray-300 focus:ring-spotify-green">
+                <SelectTrigger className="bg-zinc-700 border-zinc-600 text-zinc-100 data-[placeholder]:text-zinc-400 focus:ring-spotify-green">
                   <SelectValue placeholder="Select a group" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-zinc-800 border-zinc-700 text-zinc-100">
                   {groups.map((g: any) => (
-                    <SelectItem key={g.id} value={g.id}>
+                    <SelectItem key={g.id} value={g.id} className="focus:bg-spotify-green/20 focus:text-white hover:bg-zinc-700">
                       {g.name}
                     </SelectItem>
                   ))}
@@ -239,7 +237,7 @@ export default function UploadPage() {
               </Select>
             </div>
           </CardContent>
-          <CardFooter className="bg-gray-50 p-6 rounded-b-lg">
+          <CardFooter className="bg-zinc-850 p-6 rounded-b-lg border-t border-zinc-700">
             <Button
               type="submit"
               disabled={isUploading}

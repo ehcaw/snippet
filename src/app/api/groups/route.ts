@@ -22,7 +22,6 @@ export async function GET(req: NextRequest) {
     }
     return NextResponse.json({ data: data }, { status: 200 });
   } catch (error: any) {
-    console.log(error.message);
     return NextResponse.json(
       { error: "error fetching groups" },
       { status: 500 },
@@ -60,7 +59,6 @@ export async function POST(req: NextRequest) {
     }
     return NextResponse.json({}, { status: 200 });
   } catch (error: any) {
-    console.log(error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

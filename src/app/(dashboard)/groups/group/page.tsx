@@ -60,8 +60,6 @@ function GroupComp() {
           { p_group_id: groupId },
         );
 
-        console.log(uploadsData);
-
         if (uploadsError) throw uploadsError;
         setUploads(uploadsData || []);
       } catch (error) {
@@ -113,7 +111,6 @@ function GroupComp() {
 
   async function downloadViaFetch(url: string): Promise<void> {
     const fileName = url.split("/").pop();
-    console.log("Bruh");
     const { data, error } = await supabase.storage
       .from("mp4")
       .download(`uploads/${fileName}`);
@@ -143,18 +140,18 @@ function GroupComp() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        Loading group data...
+      <div className="flex items-center justify-center min-h-screen bg-zinc-900 text-zinc-100">
+        <p className="text-xl">Loading group data...</p>
       </div>
     );
   }
 
   return (
-    <div className="container py-6 space-y-8">
+    <div className="container py-6 space-y-8 text-zinc-100">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">{group?.name}</h1>
+        <h1 className="text-3xl font-bold text-white">{group?.name}</h1>
         <UploadDialog>
-          <Button size="sm" className="h-9 px-3">
+          <Button size="sm" className="h-9 px-3 bg-spotify-green text-black hover:bg-spotify-green/90">
             <Upload className="h-4 w-4 mr-1" />
             Upload
           </Button>
@@ -163,16 +160,16 @@ function GroupComp() {
 
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <FileMusic className="h-5 w-5" />
+          <Card className="bg-zinc-800 border-zinc-700 shadow-lg">
+            <CardHeader className="flex flex-row items-center justify-between border-b border-zinc-700 pb-4">
+              <CardTitle className="flex items-center gap-2 text-xl text-white">
+                <FileMusic className="h-5 w-5 text-spotify-green" />
                 <span>Uploads</span>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               {uploads.length === 0 ? (
-                <p className="text-muted-foreground text-center py-6">
+                <p className="text-zinc-400 text-center py-6">
                   No music uploads in this group yet.
                 </p>
               ) : (
@@ -180,16 +177,16 @@ function GroupComp() {
                   {uploads.map((upload) => (
                     <div
                       key={`${upload.user_email}-${upload.upload_date}`}
-                      className="flex items-center justify-between p-3 border rounded-lg"
+                      className="flex items-center justify-between p-4 border border-zinc-700 rounded-lg bg-zinc-850 hover:bg-zinc-750 transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <Music className="h-10 w-10 text-primary p-2 bg-primary/10 rounded-full" />
+                        <Music className="h-10 w-10 text-spotify-green p-2 bg-spotify-green/10 rounded-full" />
                         <div>
-                          <p className="font-medium">
-                            {upload.title || "Music File"} - {upload.artist}
+                          <p className="font-medium text-white">
+                            {upload.title || "Music File"} - {upload.artist || "Unknown Artist"}
                           </p>
-                          <p className="text-sm text-muted-foreground">
-                            Uploaded by {upload.user_email || "Unknown user"} ·
+                          <p className="text-sm text-zinc-400">
+                            Uploaded by {upload.user_email || "Unknown user"} ·{" "}
                             {new Date(
                               upload.upload_date || "",
                             ).toLocaleDateString()}
@@ -199,7 +196,7 @@ function GroupComp() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-1 border-spotify-green text-spotify-green hover:bg-spotify-green/10 hover:text-spotify-green"
                         onClick={() => downloadViaFetch(upload.file_url)}
                       >
                         <Download className="h-4 w-4" />
@@ -214,33 +211,33 @@ function GroupComp() {
         </div>
 
         <div>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
+          <Card className="bg-zinc-800 border-zinc-700 shadow-lg">
+            <CardHeader className="flex flex-row items-center justify-between border-b border-zinc-700 pb-4">
+              <CardTitle className="flex items-center gap-2 text-xl text-white">
+                <Users className="h-5 w-5 text-spotify-green" />
                 <span>Members ({members.length})</span>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               <div className="space-y-3">
                 {members.map((member) => (
                   <div
                     key={member.member_id}
-                    className="flex items-center gap-3 p-2"
+                    className="flex items-center gap-3 p-3 rounded-md hover:bg-zinc-750 transition-colors"
                   >
                     <Avatar>
                       <AvatarImage src={member.profiles?.avatar_url || ""} />
-                      <AvatarFallback>
-                        {(member.profiles?.username || "User")
+                      <AvatarFallback className="bg-spotify-green text-black font-semibold">
+                        {(member.profiles?.username || member.email || "U")
                           .substring(0, 2)
                           .toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium">
-                        {member.profiles?.username || "Unknown user"}
+                      <p className="font-medium text-white">
+                        {member.profiles?.username || member.email || "Unknown user"}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-zinc-400">
                         Joined {new Date(member.joined_at).toLocaleDateString()}
                       </p>
                     </div>
@@ -257,7 +254,7 @@ function GroupComp() {
 
 export default function GroupPage() {
   return (
-    <Suspense fallback={<div>Loading... </div>}>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen bg-zinc-900 text-zinc-100 text-xl">Loading... </div>}>
       <GroupComp />
     </Suspense>
   );

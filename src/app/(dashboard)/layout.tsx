@@ -19,19 +19,16 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="h-full">
-      <header className="sticky top-0 z-10 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="h-full bg-zinc-900 text-zinc-100">
+      <header className="sticky top-0 z-10 w-full border-b border-zinc-800 bg-zinc-900/95 backdrop-blur supports-[backdrop-filter]:bg-zinc-900/60">
         <div className="container flex h-14 items-center justify-between">
-          <Link href="/dashboard" className="flex items-center space-x-2">
+          <Link
+            href="/dashboard"
+            className="flex items-center space-x-2 text-spotify-green"
+          >
             <Music className="h-6 w-6" />
             <span className="font-bold">Snippet</span>
           </Link>
-          <div className="flex items-center space-x-2">
-            <ModeToggle />
-            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-              {user.user?.email?.charAt(0).toUpperCase() || "U"}
-            </div>
-          </div>
         </div>
       </header>
 
