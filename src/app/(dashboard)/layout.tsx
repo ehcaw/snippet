@@ -27,7 +27,7 @@ export default async function DashboardLayout({
             className="flex items-center space-x-2 text-spotify-green"
           >
             <Music className="h-6 w-6" />
-            <span className="font-bold">Snippet</span>
+            <span className="font-bold">Snipit</span>
           </Link>
         </div>
       </header>

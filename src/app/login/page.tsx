@@ -32,28 +32,28 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="flex min-h-screen flex-col bg-black text-white">
+      <header className="sticky top-0 z-50 w-full border-b border-zinc-800 bg-black/95 backdrop-blur supports-[backdrop-filter]:bg-black/60">
         <div className="container flex h-14 items-center">
           <div className="mr-4 flex">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2 text-white">
               <Music className="h-6 w-6" />
               <span className="font-bold">Snipit</span>
             </Link>
           </div>
         </div>
       </header>
-      <main className="flex-1 flex items-center justify-center bg-background">
-        <div className="w-full max-w-md rounded-lg border p-8 shadow-lg bg-white dark:bg-background">
-          <h1 className="text-3xl font-bold mb-2 text-center tracking-tighter">
+      <main className="flex-1 flex items-center justify-center bg-black">
+        <div className="w-full max-w-md rounded-lg border border-zinc-800 bg-zinc-900 p-8 shadow-xl">
+          <h1 className="text-3xl font-bold mb-2 text-center tracking-tighter text-white">
             Sign in to Snipit
           </h1>
-          <p className="text-muted-foreground mb-6 text-center">
+          <p className="text-zinc-400 mb-6 text-center">
             Use your Google account to continue
           </p>
 
           {error && (
-            <div className="p-3 mb-4 text-sm border border-red-300 bg-red-50 text-red-600 rounded-md">
+            <div className="p-3 mb-4 text-sm border border-red-700 bg-red-900/30 text-red-400 rounded-md">
               {error}
             </div>
           )}
@@ -62,8 +62,8 @@ export default function Login() {
             onClick={handleGoogleSignIn}
             disabled={isLoading}
             size="lg"
-            className="w-full flex items-center justify-center gap-2"
-            variant="outline"
+            className="w-full flex items-center justify-center gap-2" // text color will be handled by variant="outline" on dark bg
+            variant="outline" // Outline buttons in shadcn adapt to dark/light themes
           >
             <svg
               className="h-5 w-5"
@@ -94,9 +94,9 @@ export default function Login() {
           </Button>
         </div>
       </main>
-      <footer className="border-t py-6 md:py-0">
+      <footer className="border-t border-zinc-800 py-6 md:py-0">
         <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
-          <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
+          <p className="text-center text-sm leading-loose text-zinc-400 md:text-left">
             © 2025 Snipit. All rights reserved.
           </p>
         </div>

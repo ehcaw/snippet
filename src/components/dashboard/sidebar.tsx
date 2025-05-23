@@ -46,7 +46,7 @@ export function Sidebar() {
               className={cn(
                 "w-full justify-start text-base font-medium",
                 pathname === route.href
-                  ? "bg-spotify-green text-black hover:bg-spotify-green/90"
+                  ? "bg-spotify-green text-white hover:bg-spotify-green/90"
                   : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100",
               )}
               asChild

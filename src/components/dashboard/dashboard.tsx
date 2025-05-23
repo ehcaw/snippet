@@ -133,7 +133,9 @@ export default function DashboardPage() {
                     <Link key={group.id} href={`/groups/group?id=${group.id}`}>
                       <Card className="flex flex-col gap-2 rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 hover:border-zinc-700 hover:bg-zinc-900 transition-all h-full">
                         <Users className="h-12 w-12 text-[#1DB954]" />
-                        <h3 className="text-xl font-bold">{group.name}</h3>
+                        <h3 className="text-xl font-bold text-white">
+                          {group.name}
+                        </h3>
                         <p className="text-zinc-400 text-sm line-clamp-2">
                           {group.description || "No description"}
                         </p>
@@ -207,7 +209,7 @@ export default function DashboardPage() {
                         <Music className="h-6 w-6 text-[#1DB954]" />
                       </div>
                       <div>
-                        <h3 className="font-bold">{track.title}</h3>
+                        <h3 className="font-bold text-white">{track.title}</h3>
                         <p className="text-zinc-400">{track.artist}</p>
                       </div>
                     </div>
@@ -231,7 +233,7 @@ export default function DashboardPage() {
                 <Music className="h-12 w-12 text-zinc-700 mb-4" />
                 <h3 className="text-xl font-bold mb-2">No tracks yet</h3>
                 <p className="text-zinc-400 max-w-md">
-                  When you or members of your groups upload tracks, they'll
+                  When you or members of your groups upload tracks, they&apos;ll
                   appear here.
                 </p>
               </div>
@@ -255,8 +257,8 @@ export default function DashboardPage() {
               <Users className="h-12 w-12 text-zinc-700 mb-4" />
               <h3 className="text-xl font-bold mb-2">Activity coming soon</h3>
               <p className="text-zinc-400 max-w-md">
-                We're working on an activity feed to help you keep track of
-                what's happening in your groups.
+                We&apos;re working on an activity feed to help you keep track of
+                what&apos;s happening in your groups.
               </p>
             </div>
           </Card>
