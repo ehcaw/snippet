@@ -38,7 +38,7 @@ export default function Login() {
           <div className="mr-4 flex">
             <Link href="/" className="flex items-center space-x-2">
               <Music className="h-6 w-6" />
-              <span className="font-bold">MusicShare</span>
+              <span className="font-bold">Snipit</span>
             </Link>
           </div>
         </div>
@@ -46,7 +46,7 @@ export default function Login() {
       <main className="flex-1 flex items-center justify-center bg-background">
         <div className="w-full max-w-md rounded-lg border p-8 shadow-lg bg-white dark:bg-background">
           <h1 className="text-3xl font-bold mb-2 text-center tracking-tighter">
-            Sign in to MusicShare
+            Sign in to Snipit
           </h1>
           <p className="text-muted-foreground mb-6 text-center">
             Use your Google account to continue
@@ -97,7 +97,7 @@ export default function Login() {
       <footer className="border-t py-6 md:py-0">
         <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
           <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
-            © 2025 MusicShare. All rights reserved.
+            © 2025 Snipit. All rights reserved.
           </p>
         </div>
       </footer>

@@ -22,7 +22,7 @@ export function Header() {
           <Link href="/dashboard" className="flex items-center space-x-2">
             <Music className="h-8 w-8 text-spotify-green" />
             <span className="hidden font-bold text-xl sm:inline-block">
-              MusicShare
+              Snipit
             </span>
           </Link>
         </div>

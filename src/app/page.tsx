@@ -10,7 +10,7 @@ export default function Home() {
           <div className="mr-4 flex">
             <Link href="/" className="flex items-center space-x-2">
               <Music className="h-6 w-6 text-[#1DB954]" />
-              <span className="font-bold">MusicShare</span>
+              <span className="font-bold">Snipit</span>
             </Link>
           </div>
           <div className="flex flex-1 items-center justify-end space-x-2">
@@ -148,10 +148,10 @@ export default function Home() {
         <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
           <div className="flex items-center space-x-2">
             <Music className="h-5 w-5 text-[#1DB954]" />
-            <span className="font-semibold">MusicShare</span>
+            <span className="font-semibold">Snipit</span>
           </div>
           <p className="text-center text-sm leading-loose text-zinc-400 md:text-left">
-            © 2025 MusicShare. All rights reserved.
+            © 2025 Snipit. All rights reserved.
           </p>
           <div className="flex items-center space-x-4">
             <Link
