@@ -67,7 +67,7 @@ export default function DashboardPage() {
     groupsData?.data?.map((membership: any) => ({
       id: membership.groups.id,
       name: membership.groups.name,
-      members: "...", // This would need to come from another query
+      description: membership.groups.description,
     })) || [];
 
   // Show loading state while checking authentication

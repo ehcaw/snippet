@@ -30,7 +30,7 @@ function InviteComp() {
     return <Error message="Invalid invite link" />;
   }
 
-  return <div>Hello</div>;
+  return <div>Processing invitation</div>;
 }
 
 export default function InvitePage() {
