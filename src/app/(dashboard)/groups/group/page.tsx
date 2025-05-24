@@ -193,10 +193,7 @@ function GroupComp() {
               {group.description}
             </p>
           )}
-          <UploadDialog
-            groupId={groupId || undefined}
-            groupName={group.name || undefined}
-          >
+          <UploadDialog>
             <Button
               size="lg"
               className="bg-[#1DB954] text-black hover:bg-[#1DB954]/90 font-semibold px-6 py-3"
@@ -216,7 +213,7 @@ function GroupComp() {
               <CardHeader className="border-b border-zinc-800 pb-4">
                 <CardTitle className="flex items-center gap-3 text-2xl font-semibold">
                   <FileMusic className="h-7 w-7 text-[#1DB954]" />
-                  <span>Shared Tracks</span>
+                  <span className="text-white">Shared Tracks</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
@@ -285,7 +282,7 @@ function GroupComp() {
               <CardHeader className="border-b border-zinc-800 pb-4">
                 <CardTitle className="flex items-center gap-3 text-2xl font-semibold">
                   <Users className="h-7 w-7 text-[#1DB954]" />
-                  <span>Members ({members.length})</span>
+                  <span className="text-white">Members ({members.length})</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
