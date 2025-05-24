@@ -3,38 +3,44 @@ import { createClient } from "@/utils/supabase/client";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Music } from "lucide-react";
-import { ModeToggle } from "@/components/mode-toggle";
+import Image from "next/image";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Server-side authentication check
-  const supabase = createClient();
-  const { data: user } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
   return (
-    <div className="h-full bg-zinc-900 text-zinc-100">
-      <header className="sticky top-0 z-10 w-full border-b border-zinc-800 bg-zinc-900/95 backdrop-blur supports-[backdrop-filter]:bg-zinc-900/60">
-        <div className="container flex h-14 items-center justify-between">
+    <div className="min-h-screen bg-black text-zinc-200 flex flex-col">
+      <header className="sticky top-0 z-40 w-full border-b border-zinc-700 bg-gradient-to-r from-[#121829]/90 via-black/80 to-[#10251b]/90 shadow-2xl backdrop-blur-xl">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             href="/dashboard"
-            className="flex items-center space-x-2 text-spotify-green"
+            className="flex items-center space-x-3 group transition-opacity hover:opacity-80"
           >
-            <Music className="h-6 w-6" />
-            <span className="font-bold">Snipit</span>
+            <Image src="/music.svg" alt="Music Icon" width={24} height={24} />
+            <span className="text-2xl font-bold tracking-tight text-white">
+              Snipit
+            </span>
           </Link>
+          {/* Placeholder for potential future elements like a user dropdown */}
+          <div>{/* e.g., <UserAccountNav user={data.user} /> */}</div>
         </div>
       </header>
 
-      <div className="flex h-[calc(100vh-3.5rem)]">
-        <Sidebar />
-        <main className="flex-1 overflow-auto">{children}</main>
+      <div className="flex flex-1 h-[calc(100vh-4rem)]">
+        {" "}
+        {/* Ensure full height for the content area below header */}
+        <Sidebar /> {/* Assuming Sidebar is styled for a dark theme */}
+        <main className="flex-1 overflow-y-auto bg-[#080808]">
+          {" "}
+          {/* Main content area with a slightly off-black bg */}
+          <div className="p-4 sm:p-6 lg:p-8">
+            {" "}
+            {/* Padding for content within main */}
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   );

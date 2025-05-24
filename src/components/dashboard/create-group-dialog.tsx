@@ -117,7 +117,7 @@ export function CreateGroupDialog() {
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
-              className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white"
+              className="border-zinc-700 text-black hover:bg-zinc-800 hover:text-white"
             >
               Cancel
             </Button>

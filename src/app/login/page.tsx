@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Music } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function Login() {
   const supabase = createClient();
@@ -33,20 +34,25 @@ export default function Login() {
 
   return (
     <div className="flex min-h-screen flex-col bg-black text-white">
-      <header className="sticky top-0 z-50 w-full border-b border-zinc-800 bg-black/95 backdrop-blur supports-[backdrop-filter]:bg-black/60">
-        <div className="container flex h-14 items-center">
-          <div className="mr-4 flex">
-            <Link href="/" className="flex items-center space-x-2 text-white">
-              <Music className="h-6 w-6" />
-              <span className="font-bold">Snipit</span>
-            </Link>
-          </div>
+      <header className="sticky top-0 z-40 w-full border-b border-zinc-700 bg-gradient-to-r from-[#121829]/90 via-black/80 to-[#10251b]/90 shadow-2xl backdrop-blur-xl">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link
+            href="/dashboard"
+            className="flex items-center space-x-3 group transition-opacity hover:opacity-80"
+          >
+            <Image src="/music.svg" alt="Music Icon" width={24} height={24} />
+            <span className="text-2xl font-bold tracking-tight text-white">
+              Snipit
+            </span>
+          </Link>
+          {/* Placeholder for potential future elements like a user dropdown */}
+          <div>{/* e.g., <UserAccountNav user={data.user} /> */}</div>
         </div>
       </header>
       <main className="flex-1 flex items-center justify-center bg-black">
         <div className="w-full max-w-md rounded-lg border border-zinc-800 bg-zinc-900 p-8 shadow-xl">
           <h1 className="text-3xl font-bold mb-2 text-center tracking-tighter text-white">
-            Sign in to Snipit
+            Sign in to Snipit{" "}
           </h1>
           <p className="text-zinc-400 mb-6 text-center">
             Use your Google account to continue
@@ -62,7 +68,7 @@ export default function Login() {
             onClick={handleGoogleSignIn}
             disabled={isLoading}
             size="lg"
-            className="w-full flex items-center justify-center gap-2" // text color will be handled by variant="outline" on dark bg
+            className="w-full flex items-center justify-center gap-2 text-black" // text color will be handled by variant="outline" on dark bg
             variant="outline" // Outline buttons in shadcn adapt to dark/light themes
           >
             <svg

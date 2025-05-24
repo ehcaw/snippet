@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Music, Users, Upload, Play } from "lucide-react";
+import Image from "next/image";
 
 export default function Home() {
   return (
@@ -9,7 +10,7 @@ export default function Home() {
         <div className="container flex h-14 items-center">
           <div className="mr-4 flex">
             <Link href="/" className="flex items-center space-x-2">
-              <Music className="h-6 w-6 text-[#1DB954]" />
+              <Image src="/music.svg" alt="Music Icon" width={24} height={24} />
               <span className="font-bold">Snipit</span>
             </Link>
           </div>
@@ -61,23 +62,14 @@ export default function Home() {
                     <Button
                       size="lg"
                       variant="outline"
-                      className="w-full border-zinc-700 text-white hover:bg-zinc-800"
+                      className="w-full border-zinc-700 text-black hover:bg-zinc-800"
                     >
                       Explore
                     </Button>
                   </Link>
                 </div>
 
-                <div className="mt-8 flex items-center space-x-4 text-sm text-zinc-400">
-                  <div className="flex items-center">
-                    <div className="mr-2 h-4 w-4 rounded-full bg-[#1DB954]"></div>
-                    <span>10,000+ Users</span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="mr-2 h-4 w-4 rounded-full bg-[#1DB954]"></div>
-                    <span>50,000+ Tracks</span>
-                  </div>
-                </div>
+                <div className="mt-8 flex items-center space-x-4 text-sm text-zinc-400"></div>
               </div>
               <div className="flex flex-col justify-center">
                 <div className="grid gap-6 md:grid-cols-2">
@@ -98,9 +90,10 @@ export default function Home() {
                   </div>
                   <div className="flex flex-col gap-2 rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 transition-all hover:border-zinc-700 hover:bg-zinc-900">
                     <Play className="h-12 w-12 text-[#1DB954]" />
-                    <h3 className="text-xl font-bold">Stream Anywhere</h3>
+                    <h3 className="text-xl font-bold">Use for Spotify</h3>
                     <p className="text-zinc-400">
-                      Listen to shared music directly in the app on any device.
+                      Upload to Spotify as a local file to integrate with your
+                      existing playlists.
                     </p>
                   </div>
                   <div className="flex flex-col gap-2 rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 transition-all hover:border-zinc-700 hover:bg-zinc-900">
@@ -153,26 +146,6 @@ export default function Home() {
           <p className="text-center text-sm leading-loose text-zinc-400 md:text-left">
             © 2025 Snipit. All rights reserved.
           </p>
-          <div className="flex items-center space-x-4">
-            <Link
-              href="/terms"
-              className="text-sm text-zinc-400 hover:text-white"
-            >
-              Terms
-            </Link>
-            <Link
-              href="/privacy"
-              className="text-sm text-zinc-400 hover:text-white"
-            >
-              Privacy
-            </Link>
-            <Link
-              href="/contact"
-              className="text-sm text-zinc-400 hover:text-white"
-            >
-              Contact
-            </Link>
-          </div>
         </div>
       </footer>
     </div>

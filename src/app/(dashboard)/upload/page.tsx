@@ -135,7 +135,7 @@ export default function UploadPage() {
           </CardHeader>
           <CardContent className="space-y-6 p-6">
             <div className="space-y-2">
-              <Label htmlFor="file" className="text-base font-medium">
+              <Label htmlFor="file" className="text-white font-medium">
                 Music File
               </Label>
               {file ? (
@@ -143,7 +143,9 @@ export default function UploadPage() {
                   <div className="flex items-center space-x-3">
                     <FileMusic className="h-8 w-8 text-spotify-green" />
                     <div>
-                      <span className="font-medium text-zinc-100">{file.name}</span>
+                      <span className="font-medium text-zinc-100">
+                        {file.name}
+                      </span>
                       <p className="text-sm text-zinc-400">
                         {(file.size / (1024 * 1024)).toFixed(2)} MB
                       </p>
@@ -167,7 +169,7 @@ export default function UploadPage() {
                       <Upload className="h-10 w-10 text-spotify-green" />
                     </div>
                     <div className="flex flex-col space-y-1">
-                      <p className="text-lg font-medium">
+                      <p className="text-lg text-zinc-100 font-medium">
                         Drag and drop your file here or click to browse
                       </p>
                       <p className="text-sm text-zinc-400">
@@ -194,7 +196,7 @@ export default function UploadPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="title" className="text-base font-medium">
+              <Label htmlFor="title" className="text-zinc-100 font-medium">
                 Track Title
               </Label>
               <Input
@@ -207,7 +209,7 @@ export default function UploadPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="artist" className="text-base font-medium">
+              <Label htmlFor="artist" className="text-zinc-100 font-medium">
                 Artist
               </Label>
               <Input
@@ -220,7 +222,7 @@ export default function UploadPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="group" className="text-base font-medium">
+              <Label htmlFor="group" className="text-zinc-100 font-medium">
                 Share with Group
               </Label>
               <Select value={group} onValueChange={setGroup}>
@@ -229,7 +231,11 @@ export default function UploadPage() {
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-800 border-zinc-700 text-zinc-100">
                   {groups.map((g: any) => (
-                    <SelectItem key={g.id} value={g.id} className="focus:bg-spotify-green/20 focus:text-white hover:bg-zinc-700">
+                    <SelectItem
+                      key={g.id}
+                      value={g.id}
+                      className="focus:bg-spotify-green/20 focus:text-white hover:bg-zinc-700"
+                    >
                       {g.name}
                     </SelectItem>
                   ))}

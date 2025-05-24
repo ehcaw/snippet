@@ -48,13 +48,13 @@ export default function LibraryPage() {
         <TabsList className="bg-zinc-800 p-1 rounded-md">
           <TabsTrigger
             value="my-uploads"
-            className="data-[state=active]:bg-spotify-green data-[state=active]:text-black data-[state=inactive]:text-zinc-400 data-[state=inactive]:hover:bg-zinc-700 data-[state=inactive]:hover:text-zinc-100 rounded-sm px-3 py-1.5 text-sm font-medium"
+            className="data-[state=active]:bg-spotify-green data-[state=active]:text-white data-[state=inactive]:text-zinc-400 data-[state=inactive]:hover:bg-zinc-700 data-[state=inactive]:hover:text-zinc-100 rounded-sm px-3 py-1.5 text-sm font-medium"
           >
             My Uploads
           </TabsTrigger>
           <TabsTrigger
             value="shared-with-me"
-            className="data-[state=active]:bg-spotify-green data-[state=active]:text-black data-[state=inactive]:text-zinc-400 data-[state=inactive]:hover:bg-zinc-700 data-[state=inactive]:hover:text-zinc-100 rounded-sm px-3 py-1.5 text-sm font-medium"
+            className="data-[state=active]:bg-spotify-green data-[state=active]:text-white data-[state=inactive]:text-zinc-400 data-[state=inactive]:hover:bg-zinc-700 data-[state=inactive]:hover:text-zinc-100 rounded-sm px-3 py-1.5 text-sm font-medium"
           >
             Shared With Me
           </TabsTrigger>
@@ -92,7 +92,9 @@ export default function LibraryPage() {
                         <Play className="h-5 w-5 hidden group-hover:block" />
                       </div>
                       <div>
-                        <p className="font-medium text-zinc-100">{track.title}</p>
+                        <p className="font-medium text-zinc-100">
+                          {track.title}
+                        </p>
                       </div>
                     </div>
                     <div className="col-span-3 text-zinc-300">
@@ -126,10 +128,19 @@ export default function LibraryPage() {
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-zinc-800 border-zinc-700 text-zinc-100">
-                          <DropdownMenuItem className="hover:bg-zinc-700 focus:bg-zinc-700">Download</DropdownMenuItem>
-                          <DropdownMenuItem className="hover:bg-zinc-700 focus:bg-zinc-700">Edit Details</DropdownMenuItem>
-                          <DropdownMenuItem className="hover:bg-zinc-700 focus:bg-zinc-700">Delete</DropdownMenuItem>
+                        <DropdownMenuContent
+                          align="end"
+                          className="bg-zinc-800 border-zinc-700 text-zinc-100"
+                        >
+                          <DropdownMenuItem className="hover:bg-zinc-700 focus:bg-zinc-700">
+                            Download
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="hover:bg-zinc-700 focus:bg-zinc-700">
+                            Edit Details
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="hover:bg-zinc-700 focus:bg-zinc-700">
+                            Delete
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
@@ -173,7 +184,9 @@ export default function LibraryPage() {
                         <Play className="h-5 w-5 hidden group-hover:block" />
                       </div>
                       <div>
-                        <p className="font-medium text-zinc-100">{track.title}</p>
+                        <p className="font-medium text-zinc-100">
+                          {track.title}
+                        </p>
                       </div>
                     </div>
                     <div className="col-span-3 text-zinc-300">
@@ -210,10 +223,19 @@ export default function LibraryPage() {
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-zinc-800 border-zinc-700 text-zinc-100">
-                          <DropdownMenuItem className="hover:bg-zinc-700 focus:bg-zinc-700">Download</DropdownMenuItem>
-                          <DropdownMenuItem className="hover:bg-zinc-700 focus:bg-zinc-700">Add to Playlist</DropdownMenuItem>
-                          <DropdownMenuItem className="hover:bg-zinc-700 focus:bg-zinc-700">View Details</DropdownMenuItem>
+                        <DropdownMenuContent
+                          align="end"
+                          className="bg-zinc-800 border-zinc-700 text-zinc-100"
+                        >
+                          <DropdownMenuItem className="hover:bg-zinc-700 focus:bg-zinc-700">
+                            Download
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="hover:bg-zinc-700 focus:bg-zinc-700">
+                            Add to Playlist
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="hover:bg-zinc-700 focus:bg-zinc-700">
+                            View Details
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
