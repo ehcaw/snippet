@@ -3,10 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { useSearchParams } from "next/navigation";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
   const supabase = createClient();
+  const searchParams = useSearchParams();
+
+  const redirectLink = searchParams.get("redirect"); // if new users are being invited
+
   useEffect(() => {
     async function signinRoute() {
       try {
@@ -14,11 +19,15 @@ export default function AuthCallbackPage() {
         if (userError) {
           throw new Error("Unable to sign in");
         }
+        if (redirectLink) {
+          router.push(redirectLink);
+        }
+
         router.push("/dashboard");
       } catch (error: any) {
         router.push("/error");
       }
     }
     signinRoute();
-  }, [router, supabase]);
+  }, [router, supabase, redirectLink]);
 }

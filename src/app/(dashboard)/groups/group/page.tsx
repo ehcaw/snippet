@@ -12,10 +12,12 @@ import {
   FileMusic,
   Upload,
   Loader2,
+  UserPlus,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Database } from "../../../../../database.types";
 import { UploadDialog } from "@/components/dashboard/upload-file-dialog";
+import { InviteMemberDialog } from "@/components/dashboard/invite-member-dialog";
 import { getGroupMembers } from "@/lib/actions";
 import { toast } from "@/hooks/use-toast"; // Assuming useToast is correctly set up
 
@@ -179,29 +181,69 @@ function GroupComp() {
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Gradient Header */}
-      <header className="relative overflow-hidden py-10 md:py-16">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1e3264] via-[#121212] to-[#1DB954]/30 z-0"></div>
-        <div className="absolute top-0 left-1/4 w-72 h-72 rounded-full bg-[#1DB954]/15 blur-3xl z-0 opacity-70"></div>
-        <div className="absolute bottom-0 right-1/3 w-72 h-72 rounded-full bg-purple-900/15 blur-3xl z-0 opacity-70"></div>
+      <header className="relative overflow-hidden py-8 md:py-12">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1e3264] via-[#121212] to-[#1DB954]/20 z-0"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-[#1DB954]/10 blur-3xl z-0 opacity-80"></div>
+        <div className="absolute bottom-0 right-1/3 w-96 h-96 rounded-full bg-purple-900/10 blur-3xl z-0 opacity-80"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-blue-900/5 blur-3xl z-0"></div>
 
-        <div className="container relative z-10 space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tighter">
-            {group.name}
-          </h1>
-          {group.description && (
-            <p className="text-lg md:text-xl text-white/80 max-w-3xl">
-              {group.description}
-            </p>
-          )}
-          <UploadDialog>
-            <Button
-              size="lg"
-              className="bg-[#1DB954] text-black hover:bg-[#1DB954]/90 font-semibold px-6 py-3"
-            >
-              <Upload className="h-5 w-5 mr-2" />
-              Upload Track
-            </Button>
-          </UploadDialog>
+        <div className="container relative z-10">
+          <div className="max-w-4xl mx-auto text-center space-y-4">
+            {/* Group Icon */}
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-br from-[#1DB954]/20 to-[#1DB954]/5 border border-[#1DB954]/20 mb-3">
+              <Users className="h-8 w-8 text-[#1DB954]" />
+            </div>
+
+            {/* Group Name */}
+            <h1 className="text-3xl md:text-5xl font-bold tracking-tighter bg-gradient-to-r from-zinc-100 via-zinc-200 to-zinc-300 bg-clip-text text-transparent">
+              {group.name}
+            </h1>
+
+            {/* Group Description */}
+            {group.description && (
+              <p className="text-lg md:text-xl text-zinc-300 max-w-2xl mx-auto leading-relaxed">
+                {group.description}
+              </p>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+              <UploadDialog>
+                <Button
+                  size="lg"
+                  className="bg-zinc-800 text-zinc-200 hover:bg-zinc-700 hover:text-zinc-100 font-bold px-8 py-4 text-lg shadow-lg transition-all duration-300 hover:scale-105 min-w-[200px] border border-zinc-700 hover:border-zinc-600"
+                >
+                  <Upload className="h-6 w-6 mr-3" />
+                  Upload Track
+                </Button>
+              </UploadDialog>
+              <InviteMemberDialog groupId={groupId || ""}>
+                <Button
+                  size="lg"
+                  className="bg-zinc-900 text-zinc-300 hover:bg-zinc-700 hover:text-zinc-200 font-semibold px-8 py-4 text-lg transition-all duration-300 hover:scale-105 min-w-[200px] border border-zinc-800 hover:border-zinc-600"
+                >
+                  <UserPlus className="h-6 w-6 mr-3" />
+                  Invite Members
+                </Button>
+              </InviteMemberDialog>
+            </div>
+
+            {/* Stats */}
+            <div className="flex items-center justify-center gap-8 pt-4 text-zinc-400">
+              <div className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                <span className="text-md font-medium">
+                  {members.length} Members
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Music className="h-5 w-5" />
+                <span className="text-lg font-medium">
+                  {uploads.length} Tracks
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -257,7 +299,7 @@ function GroupComp() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="flex items-center gap-2 border-[#1DB954] text-[#1DB954] hover:bg-[#1DB954]/10 hover:text-[#1DB954] w-full sm:w-auto"
+                          className="bg-zinc-800 text-zinc-200 hover:bg-zinc-700 hover:text-zinc-100 font-bold px-8 py-4 text-sm shadow-lg transition-all duration-300 hover:scale-105 min-w-[200px] border border-zinc-700 hover:border-zinc-600"
                           onClick={() =>
                             downloadTrack(
                               upload.file_url,
@@ -280,10 +322,15 @@ function GroupComp() {
           <aside className="lg:col-span-1">
             <Card className="bg-zinc-900 border-zinc-800 shadow-xl">
               <CardHeader className="border-b border-zinc-800 pb-4">
-                <CardTitle className="flex items-center gap-3 text-2xl font-semibold">
-                  <Users className="h-7 w-7 text-[#1DB954]" />
-                  <span className="text-white">Members ({members.length})</span>
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-3 text-xl font-semibold">
+                    <Users className="h-7 w-7 text-[#1DB954]" />
+                    <span className="text-white">
+                      Members ({members.length})
+                    </span>
+                  </CardTitle>
+                  <InviteMemberDialog groupId={groupId || ""} />
+                </div>
               </CardHeader>
               <CardContent className="pt-6">
                 {members.length === 0 ? (

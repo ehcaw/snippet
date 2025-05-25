@@ -17,11 +17,11 @@ export async function POST(req: NextRequest) {
     const { error: inviteError } = await supabase.from("group_members").insert({
       member_id: user_id,
       group_id: group_id,
-      joined_at: Date.now(),
     });
     if (inviteError) {
       throw inviteError;
     }
+    return NextResponse.json({ text: "success" }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

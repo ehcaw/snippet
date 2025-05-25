@@ -5,11 +5,16 @@ import { Music } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useState } from "react";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 
 export default function Login() {
   const supabase = createClient();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const searchParams = useSearchParams();
+
+  const redirectLink = searchParams.get("redirect"); // if new users are being invited
 
   const handleGoogleSignIn = async () => {
     try {
@@ -19,7 +24,9 @@ export default function Login() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectLink
+            ? `${window.location.origin}/auth/callback?redirect=${redirectLink}`
+            : `${window.location.origin}/auth/callback`,
         },
       });
 

@@ -2,33 +2,46 @@
 import { Error } from "@/components/error";
 import { createClient } from "@/utils/supabase/client";
 import { useSearchParams } from "next/navigation";
-import { redirect } from "next/navigation";
 import { useEffect, Suspense, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 function InviteComp() {
   const searchParams = useSearchParams();
   let groupId = useRef("");
   //let groupId = searchParams.get("id");
-  groupId.current = searchParams.get("id") || "";
+  groupId.current = searchParams.get("group_id") || "";
+
+  const router = useRouter();
+
+  if (!groupId.current || groupId.current.length < 1) {
+    router.push("/dashboard");
+  }
   const supabase = createClient();
 
   useEffect(() => {
     async function invite() {
       const { data, error } = await supabase.auth.getUser();
       if (!data.user || error) {
-        redirect("/404?message=Error getting user");
+        router.push("/login?redirect=/invite_user?group_id=" + groupId.current);
       }
-      const response = await fetch("/api/confirm-invite");
+      const response = await fetch("/api/confirm-invite", {
+        method: "POST",
+        body: JSON.stringify({
+          user_id: data.user?.id,
+          group_id: groupId.current,
+        }),
+      });
       if (!response.ok) {
         groupId.current = "";
+        const data = await response.json();
+        console.log(data);
+        //router.push("/?error=invite_failed");
       } else {
-        redirect("/dashboard");
+        router.push("/dashboard");
       }
     }
-  }, [groupId, supabase.auth]);
-  if (!groupId.current || groupId.current.length == 0) {
-    return <Error message="Invalid invite link" />;
-  }
+    invite();
+  }, [groupId, supabase.auth, router]);
 
   return <div>Processing invitation</div>;
 }
