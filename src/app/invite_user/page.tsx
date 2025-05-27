@@ -10,10 +10,12 @@ function InviteComp() {
   const router = useRouter();
   const groupId = useRef("");
   const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState<"loading" | "success" | "error" | "invalid">("loading");
+  const [status, setStatus] = useState<
+    "loading" | "success" | "error" | "invalid"
+  >("loading");
   const [message, setMessage] = useState("");
   const [groupName, setGroupName] = useState("");
-  
+
   groupId.current = searchParams.get("group_id") || "";
 
   const supabase = createClient();
@@ -46,7 +48,9 @@ function InviteComp() {
         const groupData = await validateGroupId(groupId.current);
         if (!groupData) {
           setStatus("invalid");
-          setMessage("This invitation link is invalid or the group no longer exists.");
+          setMessage(
+            "This invitation link is invalid or the group no longer exists.",
+          );
           setTimeout(() => router.push("/dashboard"), 3000);
           return;
         }
@@ -57,7 +61,10 @@ function InviteComp() {
         // Check authentication
         const { data, error } = await supabase.auth.getUser();
         if (!data.user || error) {
-          router.push("/login?redirect=" + encodeURIComponent(`/invite_user?group_id=${groupId.current}`));
+          router.push(
+            "/login?redirect=" +
+              encodeURIComponent(`/invite_user?group_id=${groupId.current}`),
+          );
           return;
         }
 
@@ -78,7 +85,10 @@ function InviteComp() {
         if (!response.ok) {
           const errorData = await response.json();
           setStatus("error");
-          setMessage(errorData.error || "Failed to join the group. You may already be a member.");
+          setMessage(
+            errorData.error ||
+              "Failed to join the group. You may already be a member.",
+          );
           setTimeout(() => router.push("/dashboard"), 3000);
         } else {
           setStatus("success");
@@ -139,14 +149,17 @@ function InviteComp() {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-[#1DB954]/20 to-[#1DB954]/5 border border-[#1DB954]/20 mb-6">
               <Users className="h-10 w-10 text-[#1DB954]" />
             </div>
-            
+
             <h1 className="text-4xl md:text-5xl font-bold tracking-tighter">
               Group Invitation
             </h1>
-            
+
             {groupName && (
               <p className="text-lg md:text-xl text-zinc-300">
-                You've been invited to join <span className="text-[#1DB954] font-semibold">{groupName}</span>
+                Youve been invited to join{" "}
+                <span className="text-[#1DB954] font-semibold">
+                  {groupName}
+                </span>
               </p>
             )}
           </div>
@@ -159,7 +172,7 @@ function InviteComp() {
           <Card className="bg-zinc-900 border-zinc-800 shadow-xl p-8">
             <div className="flex flex-col items-center text-center space-y-6">
               {getStatusIcon()}
-              
+
               <div className="space-y-2">
                 <h2 className={`text-xl font-semibold ${getStatusColor()}`}>
                   {status === "loading" && "Processing Invitation"}
@@ -167,10 +180,8 @@ function InviteComp() {
                   {status === "error" && "Invitation Failed"}
                   {status === "invalid" && "Invalid Invitation"}
                 </h2>
-                
-                <p className="text-zinc-400 leading-relaxed">
-                  {message}
-                </p>
+
+                <p className="text-zinc-400 leading-relaxed">{message}</p>
               </div>
 
               {status === "success" && (
