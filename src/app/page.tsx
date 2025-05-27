@@ -1,9 +1,25 @@
+"use client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Music, Users, Upload, Play } from "lucide-react";
 import Image from "next/image";
+import { createClient } from "@/utils/supabase/client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { checkClientAuth } from "@/lib/utils";
 
 export default function Home() {
+  const supabase = createClient();
+  const router = useRouter();
+
+  useEffect(() => {
+    checkClientAuth().then((loggedIn) => {
+      if (loggedIn) {
+        router.push("/dashboard");
+      }
+    });
+  }, [router]);
+
   return (
     <div className="flex min-h-screen flex-col bg-black text-white">
       <header className="sticky top-0 z-50 w-full border-b border-zinc-800 bg-black/95 backdrop-blur supports-[backdrop-filter]:bg-black/60">

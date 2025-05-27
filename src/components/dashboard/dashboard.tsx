@@ -33,10 +33,10 @@ export default function DashboardPage() {
         router.push("/login");
         return;
       }
-
       setUserId(data.user.id);
       setUserEmail(data.user.email || "");
       setIsAuthChecking(false);
+      router.push("/dashboard");
     }
 
     checkAuth();
@@ -67,7 +67,7 @@ export default function DashboardPage() {
     groupsData?.data?.map((membership: any) => ({
       id: membership.groups.id,
       name: membership.groups.name,
-      members: "...", // This would need to come from another query
+      description: membership.groups.description,
     })) || [];
 
   // Show loading state while checking authentication
@@ -171,7 +171,7 @@ export default function DashboardPage() {
                       <div className="h-12 w-12 rounded-full bg-zinc-800 flex items-center justify-center">
                         <Plus className="h-6 w-6 text-[#1DB954]" />
                       </div>
-                      <h3 className="text-xl font-bold text-center">
+                      <h3 className="text-xl font-bold text-white text-center">
                         Create Your First Group
                       </h3>
                       <p className="text-zinc-400 text-sm text-center">

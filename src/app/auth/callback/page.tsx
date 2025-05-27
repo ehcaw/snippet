@@ -3,10 +3,17 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { useSearchParams } from "next/navigation";
+import { sanitizeRedirect } from "@/lib/utils";
+import { Suspense } from "react";
 
-export default function AuthCallbackPage() {
+function CallbackContent() {
   const router = useRouter();
   const supabase = createClient();
+  const searchParams = useSearchParams();
+
+  const redirectLink = searchParams.get("redirect"); // if new users are being invited
+
   useEffect(() => {
     async function signinRoute() {
       try {
@@ -14,11 +21,31 @@ export default function AuthCallbackPage() {
         if (userError) {
           throw new Error("Unable to sign in");
         }
-        router.push("/dashboard");
+        if (redirectLink) {
+          let sanitizedRedirectLink = sanitizeRedirect(
+            redirectLink,
+            "/dashboard",
+          );
+          router.push(sanitizedRedirectLink);
+          return;
+        } else {
+          router.push("/dashboard");
+          return;
+        }
       } catch (error: any) {
         router.push("/error");
       }
     }
     signinRoute();
-  }, [router, supabase]);
+  }, [router, supabase, redirectLink]);
+  
+  return null;
+}
+
+export default function AuthCallback() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CallbackContent />
+    </Suspense>
+  );
 }

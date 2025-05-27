@@ -143,7 +143,9 @@ export function UploadDialog({ children, onSuccess }: UploadDialogProps) {
                   <div className="flex items-center space-x-3">
                     <FileMusic className="h-8 w-8 text-spotify-green" />
                     <div>
-                      <span className="font-medium text-zinc-100">{file.name}</span>
+                      <span className="font-medium text-zinc-100">
+                        {file.name}
+                      </span>
                       <p className="text-sm text-zinc-400">
                         {(file.size / (1024 * 1024)).toFixed(2)} MB
                       </p>
@@ -232,12 +234,20 @@ export function UploadDialog({ children, onSuccess }: UploadDialogProps) {
                 <SelectContent className="bg-zinc-800 text-zinc-100 border-zinc-700">
                   {groups.length > 0 ? (
                     groups.map((g: any) => (
-                      <SelectItem key={g.id} value={g.id} className="focus:bg-spotify-green/20 focus:text-white hover:bg-zinc-700">
+                      <SelectItem
+                        key={g.id}
+                        value={g.id}
+                        className="focus:bg-spotify-green/20 focus:text-white hover:bg-zinc-700"
+                      >
                         {g.name}
                       </SelectItem>
                     ))
                   ) : (
-                    <SelectItem value="no-groups" disabled className="text-zinc-500">
+                    <SelectItem
+                      value="no-groups"
+                      disabled
+                      className="text-zinc-500"
+                    >
                       No groups available
                     </SelectItem>
                   )}
