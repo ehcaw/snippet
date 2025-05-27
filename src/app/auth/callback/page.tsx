@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useSearchParams } from "next/navigation";
+import { sanitizeRedirect } from "@/lib/utils";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -20,10 +21,16 @@ export default function AuthCallbackPage() {
           throw new Error("Unable to sign in");
         }
         if (redirectLink) {
-          router.push(redirectLink);
+          let sanitizedRedirectLink = sanitizeRedirect(
+            redirectLink,
+            "/dashboard",
+          );
+          router.push(sanitizedRedirectLink);
+          return;
+        } else {
+          router.push("/dashboard");
+          return;
         }
-
-        router.push("/dashboard");
       } catch (error: any) {
         router.push("/error");
       }
